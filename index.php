@@ -1,7 +1,5 @@
 <?php
 
-XXX_includeProjectSource('PHP_Comtext');
-
 include_once 'XXX_Array.php';
 include_once 'XXX_Default.php';
 include_once 'XXX_Number.php';

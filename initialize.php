@@ -18,6 +18,7 @@ include_once 'XXX_String_PHPON.php';
 include_once 'XXX_String_RichTextFormatting.php';
 include_once 'XXX_String_Unicode.php';
 include_once 'XXX_String_Unicode_Filter.php';
+include_once 'XXX_Object.php';
 include_once 'XXX_Timestamp.php';
 include_once 'XXX_TimestampHelpers.php';
 include_once 'XXX_Type.php';

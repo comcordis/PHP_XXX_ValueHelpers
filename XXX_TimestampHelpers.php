@@ -606,21 +606,21 @@ abstract class XXX_TimestampHelpers
 	// TimeZone & DST
 	////////////////////
 	
-		public static function getLocalSecondOffset ()
+		public static function getLocalSecondOffset ($timeZoneSecondOffset = false, $daylightSavingTime = false)
 		{
 			$localSecondOffset = 0;
 			
-			/*
-			if (XXX_Type::isInteger(XXX_I18n_Localization::get('dateTime', 'timeZoneSecondOffset')))
+			
+			if (XXX_Type::isInteger($timeZoneSecondOffset))
 			{
-				$localSecondOffset += XXX_I18n_Localization::get('dateTime', 'timeZoneSecondOffset');
+				$localSecondOffset += $timeZoneSecondOffset;
 				
-				if (XXX_I18n_Localization::get('dateTime', 'daylightSavingTime'))
+				if ($daylightSavingTime)
 				{
 					$localSecondOffset += 3600;
 				}
 			}
-			*/
+			
 			
 			return $localSecondOffset;
 		}
@@ -631,11 +631,16 @@ abstract class XXX_TimestampHelpers
 	
 	public static function getMonthArray ($year, $month, $weekStart = 'monday')
 	{
+		if (!($weekStart == 'monday' || $weekStart == 'sunday'))
+		{
+			$weekStart = 'monday';
+		}
+		
 		$currentMonth = array
 		(
 			'year' => $year,
 			'month' => $month
-		);		
+		);
 		$previousMonth = self::getYearAndMonthByMonthOffset($year, $month, -1);
 		$nextMonth = self::getYearAndMonthByMonthOffset($year, $month, 1);
 		
@@ -1293,6 +1298,116 @@ abstract class XXX_TimestampHelpers
 		
 		return $result;
 	}	
-};
+	
+	
+	
+	
+	
+	public static function parseTimeValue ($timeValue = '', $clockType = '24')
+	{
+		$clockType = XXX_Default::toOption($clockType, array('12', '24'), '24');
+		
+		$original = $timeValue;
+		
+		$clockType = XXX_Default::toOption($clockType, array('12', '24'), '24');
+		
+		$hour = 12;
+		$minute = 0;
+		$meridiem = 'pm';
+		
+		$newHour = hour;
+		$newMinute = minute;
+		$newMeridiem = false;
+		
+		if ($timeValue != '')
+		{
+			$timeValue = XXX_String::convertToLowerCase($timeValue);
+			
+			$matches = XXX_String_Pattern::getMatches($timeValue, '([0-9]{1,2})(?:[/\\-. :,\'"]*([0-9]{1,2}))?[/\\-. :,\'"]*([apm. ]{2,})?', 'i');
+			
+			if (XXX_Array::getFirstLevelItemTotal($matches) == 2)
+			{
+				$newHour = XXX_Type::makeInteger($matches[1][0]);
+			}
+			else if (XXX_Array::getFirstLevelItemTotal($matches) == 3)
+			{
+				$newHour = XXX_Type::makeInteger($matches[1][0]);
+				$newMinute = XXX_Type::makeInteger($matches[2][0]);
+			}
+			else if (XXX_Array::getFirstLevelItemTotal($matches) == 4)
+			{
+				$newHour = XXX_Type::makeInteger($matches[1][0]);
+				$newMinute = XXX_Type::makeInteger($matches[2][0]);
+				
+				$temp = XXX_String::trim($matches[3][0]);
+				
+				if (XXX_String::findFirstPosition($temp, 'a') > -1)
+				{
+					$newMeridiem = 'am';
+				}
+				else if (XXX_String::findFirstPosition($temp, 'p') > -1)
+				{
+					$newMeridiem = 'pm';
+				}
+			}
+			
+			$newHour = XXX_Number::absolute($newHour);
+			$newMinute = XXX_Number::absolute($newMinute);
+			$newMinute %= 60;
+			
+			switch ($clockType)
+			{
+				case '12':
+					
+					$newHour %= 24;
+					
+					if ($newMeridiem == false)
+					{
+						if ($newHour == 12)
+						{
+							$newHour = 0;
+						}
+					}
+					else if ($newMeridiem == 'pm')
+					{
+						if ($newHour < 12)
+						{
+							$newHour += 12;
+						}
+					}
+					
+					break;
+				case '24':
+					$newHour %= 24;					
+					break;
+			}
+					
+			if (!($newHour >= 0 && $newHour < 24 && $newMinute >= 0 && $newMinute < 60))
+			{
+				$newHour = $hour;
+				$newMinute = $minute;
+			}
+					
+			if ($newHour < 12)
+			{
+				$newMeridiem = 'am';
+			}
+			else
+			{
+				$newMeridiem = 'pm';
+			}
+		}
+		
+		$result = array
+		(
+			'original' => $original,
+			'hour' => $newHour,
+			'minute' => $newMinute,
+			'meridiem' => $newMeridiem
+		);
+		
+		return $result;
+	}	
+}
 
 ?>

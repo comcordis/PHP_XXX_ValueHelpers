@@ -68,6 +68,26 @@ abstract class XXX_Array
 		return $exists;
 	}
 	
+	
+	////////////////////
+	// Part
+	////////////////////
+	
+	public static function getPart ($array = array(), $offset = 0, $length = 0)
+	{
+		$offset = XXX_Default::toInteger($offset, 0);
+		$length = XXX_Default::toInteger(length, 0);
+		
+		if (XXX_Type::isNull($length) || $length === 0)
+		{
+			$length = self::getFirstLevelItemTotal($array);	
+		}
+		
+		$result = array_slice($array, $offset, $length);
+		
+		return $result;
+	}
+	
 	////////////////////
 	// Matching
 	////////////////////

@@ -790,7 +790,7 @@ Special characters:  : ; < = > ? @ [ \ ] ^ _ ` { | } ~';
 	public static function getFirstSeparatedPart ($value = '', $separator = '')
 	{
 		$parts = XXX_String::splitToArray($value, $separator);
-				
+		
 		return array_shift($parts);
 	}
 	
@@ -808,6 +808,25 @@ Special characters:  : ; < = > ? @ [ \ ] ^ _ ` { | } ~';
 		array_shift($parts);
 		
 		return XXX_Array::joinValuesToString($parts, $separator);
+	}
+	
+	////////////////////
+	// Line separator <br>
+	////////////////////
+	
+	public static function lineSeparatorToBR ($value = '')
+	{
+		$value = self::normalizeLineSeparators($value);
+		$value = self::replace(XXX_String::$lineSeparator, '<br>');
+		
+		return $value;
+	}
+	
+	public static function brToLineSeparator ($value = '')
+	{
+		$value = self::replace('<br>', XXX_String::$lineSeparator);
+		
+		return $value;
 	}
 }
 

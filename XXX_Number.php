@@ -234,6 +234,11 @@ abstract class XXX_Number
 	{
 		return atan($value);	
 	}
+	
+	public static function log ($value)
+	{
+		return log($value);	
+	}
 }
 
 ?>

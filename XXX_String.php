@@ -828,6 +828,130 @@ Special characters:  : ; < = > ? @ [ \ ] ^ _ ` { | } ~';
 		
 		return $value;
 	}
+	
+	////////////////////
+	// Unique characters / Entropy
+	////////////////////
+	
+	public static function sortCountsArray ($a, $b)
+	{
+		return $b['count'] - $a['count'];
+	}
+	
+	public static function getUniqueCharacterInformation ($subject)
+	{
+		$characterLength = XXX_String::getCharacterLength($subject);
+		
+		$counts = array();
+		
+		for ($i = 0, $iEnd = $characterLength; $i < $iEnd; ++$i)
+		{
+			$character = XXX_String::getCharacterAtPosition($subject, $i);
+			
+			$alreadyHaveARecord = false;
+			
+			for ($j = 0, $jEnd = XXX_Array::getFirstLevelItemTotal($counts); $j < $jEnd; ++$j)
+			{
+				if ($counts[$j]['character'] == $character)
+				{
+					++$counts[$j]['count'];
+				}
+			}
+			
+			if ($alreadyHaveARecord == false)
+			{
+				$counts[] = array('character' => $character, 'count' => 1);
+			}
+		}
+		
+		$uniqueCharacterTotal = XXX_Array::getFirstLevelItemTotal($temp);
+		
+		$averageCharacterFrequency = $characterLength / $uniqueCharacterTotal;
+		
+		// Sort from high to low
+		uasort($counts, 'XXX_String::sortCountsArray');
+		
+		/*
+		aaaa -> 0%
+		aada -> 25%
+		aadda -> 40%
+		fadda -> 60%
+		*/
+		
+		$percentage = 0;
+		$otherCharacterTotal = 0;
+		
+		if (XXX_Array::getFirstLevelItemTotal($counts) > 1)
+		{
+			for ($i = 1, $iEnd = XXX_Array::getFirstLevelItemTotal($counts); $i < $iEnd; ++$i)
+			{
+				$otherCharacterTotal += $counts[$i]['count'];
+			}
+			
+			$percentage = ($otherCharacterTotal / $characterLength) * 100;
+		}
+		
+		$result = array
+		(
+			'characterLength' => $characterLength,
+			'uniqueCharacterTotal' => $uniqueCharacterTotal,
+			'otherCharacterTotal' => $otherCharacterTotal,
+			'averageCharacterFrequency' => $averageCharacterFrequency,
+			'percentage' => $percentage,
+			'counts' => $counts
+		);
+		
+		return $result;
+	}
+	
+	/*
+	Entropy: Number of bits H it would take to represent every combination of characterLength L with an alphabet of N different characters.
+	The higher, the complexer (and thus better for for example a password)
+	
+	H = L log 2 N
+		- H: entropy
+		- L: characterLength
+		- N: alphabetSize (Usually measured in bits)				
+	*/
+	public static function getEntropy ($subject)
+	{
+		$uniqueCharacterInformation = self::getUniqueCharacterInformation($subject);
+		
+		$characterLength = $uniqueCharacterInformation['characterLength'];
+		$alphabetSize = $uniqueCharacterInformation['uniqueCharacterTotal'];
+		
+		$entropy = 0;
+		
+		if ($characterLength > 0)
+		{
+			
+			$entropy = ($characterLength * XXX_Number::log($alphabetSize)) / XXX_Number::log(2);
+		}
+		
+		return $entropy;
+	}
+	
+	////////////////////
+	// Terms
+	////////////////////
+	
+	public static function sortTermsArray ($a, $b)
+	{
+		return XXX_String::getCharacterLength($a) - XXX_String::getCharacterLength($b);
+	}
+	
+	public static function splitToTerms ($sentence)
+	{
+		$sentence = XXX_Type::makeString($sentence);
+		
+		$terms = XXX_String_Pattern::splitToArray($sentence, '\\s*(?:,|\\(|\\)|\\s)\\s*', '');
+		
+		uasort($terms, 'XXX_String::sortTermsArray');
+						
+		$terms = XXX_Array::filterOutEmpty($terms);
+		
+		return $terms;
+	}
 }
 
 ?>

@@ -44,7 +44,28 @@ abstract class XXX_String_Levenshtein
 		}
 		
 		return $r[$m][$n];
-	}	
+	}
+	
+	public static function getInformation ($a, $b)
+	{
+		$levenshteinDistance = XXX_String_Levenshtein::getDistance($a, $b);
+		
+		$identical = $levenshteinDistance === 0;
+		
+		$longestCharacterLength = XXX_Number::highest(XXX_String::getCharacterLength($a), XXX_String::getCharacterLength($b));
+		
+		// Percentage identical
+		$percentage = (1 - ($levenshteinDistance / $longestCharacterLength)) * 100;
+		
+		$result = array
+		(
+			'identical' => $identical,
+			'distance' => $levenshteinDistance,
+			'percentage' => $percentage			
+		);
+		
+		return $result;
+	}
 }
 
 ?>

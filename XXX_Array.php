@@ -75,10 +75,10 @@ abstract class XXX_Array
 	
 	public static function getPart ($array = array(), $offset = 0, $length = 0)
 	{
-		$offset = XXX_Default::toInteger($offset, 0);
-		$length = XXX_Default::toInteger(length, 0);
-		
-		if (XXX_Type::isNull($length) || $length === 0)
+		$offset = XXX_Type::makeInteger($offset);
+		$length = XXX_Type::makeInteger($length);
+				
+		if ($length === 0)
 		{
 			$length = self::getFirstLevelItemTotal($array);	
 		}

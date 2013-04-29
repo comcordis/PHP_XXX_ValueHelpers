@@ -489,6 +489,24 @@ abstract class XXX_Array
 		return $array;
 	}
 	
+	// Create key from path
+	
+	public static function setValueForKeyPath (&$array, $keyPath, $value)
+	{
+		$currentItem =& $array;
+		
+		foreach ($keyPath as $key)
+		{
+			if (!isset($currentItem[$key]))
+			{
+				$currentItem[$key] = array();
+			}
+			
+			$currentItem =& $currentItem[$key];
+		}
+		
+		$currentItem = $value;
+	}
 }
 
 ?>

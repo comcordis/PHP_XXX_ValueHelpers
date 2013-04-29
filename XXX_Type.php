@@ -401,7 +401,7 @@ abstract class XXX_Type
 				
 		foreach ($tempArguments as $tempArgument)
 		{
-			self::peakAtVariableSub($tempArgument);;
+			self::peakAtVariableSub($tempArgument);
 		}
 		
 		echo '</pre>' . XXX_String::$lineSeparator;
@@ -413,7 +413,8 @@ abstract class XXX_Type
 		
 		for ($i = 0, $iEnd = $spacing; $i < $iEnd; ++$i)
 		{
-			$renderedSpacing .= '    ';
+			//$renderedSpacing .= '    ';
+			$renderedSpacing .= '	';
 		}
 		
 		$renderedLineSeparator = XXX_String::$lineSeparator;
@@ -423,7 +424,10 @@ abstract class XXX_Type
 			$depth = XXX_Array::getDeepestLevel($value);
 			$keysOnFirstLevel = XXX_Array::getFirstLevelItemTotal($value);
 			
-			$arrayInformation = ' // Array (' . (XXX_Type::isNumericArray($value) ? 'numeric' : 'associative') . ') - ' . $keysOnFirstLevel . ' item(s) - ' . $depth . ' level(s)';
+			if (self::$comments)
+			{
+				$arrayInformation = ' // Array (' . (XXX_Type::isNumericArray($value) ? 'numeric' : 'associative') . ') - ' . $keysOnFirstLevel . ' item(s) - ' . $depth . ' level(s)';
+			}
 			
 			if (XXX_Type::isNumericArray($value))
 			{
@@ -541,9 +545,7 @@ abstract class XXX_Type
 			echo $assignmentOperator;
 			
 			echo 'OBJECT';
-			
-			
-			
+						
 			echo $lineEnding;
 			if (self::$comments)
 			{

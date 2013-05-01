@@ -622,11 +622,13 @@ abstract class XXX_Type
 		{
 			$characterLength = XXX_String::getCharacterLength($value);					
 			$stringInformation = ' - ' . $characterLength . ' character(s)';
-						
+			
+			$escapedValue = XXX_String_Pattern::replace($value, '(?<=[^\\\\])\'', 'i', '$1\\\''); 
+				
 			echo $renderedSpacing;
 			echo $identifier;
 			echo $assignmentOperator;
-			echo '\'' . XXX_String::addSlashes($value) . '\'' . '';
+			echo '\'' . $escapedValue . '\'' . '';
 			echo $lineEnding;
 			if (self::$comments)
 			{

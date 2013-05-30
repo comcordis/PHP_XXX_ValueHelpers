@@ -1408,6 +1408,241 @@ abstract class XXX_TimestampHelpers
 		
 		return $result;
 	}	
+	
+	
+	
+	
+	public static function parseDateValue ($dateValue, $dateFormat)
+	{
+		XXX_PHP::errorNotification(0, 'Parsing date value ' . $dateValue);
+		
+		$dateFormat = XXX_Default::toOption($dateFormat, array('dateMonthYear', 'monthDateYear', 'yearMonthDate'), 'dateMonthYear');
+		
+		$todaysDate = new XXX_Timestamp();
+		$todaysDateParts = $todaysDate->parse();
+				
+		$year = $todaysDateParts['year'];
+		$month = $todaysDateParts['month'];
+		$date = $todaysDateParts['date'];
+		
+		$newYear = $year;
+		$newMonth = $month;
+		$newDate = $date;
+		
+		if ($dateValue != '')
+		{
+			$dateValue = XXX_String::convertToLowerCase($dateValue);
+			
+			$parts = XXX_String_Pattern::splitToArray($dateValue, '[/\\-., :\'"]+', '');
+			
+				//XXX_PHP::errorNotification(0, 'Parsed date parts ' . XXX_String_JSON::encode($parts));
+				
+			$filteredParts = array();
+			
+			for ($i = 0, $iEnd = XXX_Array::getFirstLevelItemTotal($parts); $i < $iEnd; ++$i)
+			{
+				$filteredPart = XXX_String::trim($parts[$i]);
+				
+				
+				$monthNames = XXX_I18n_Translation::get('dateTime', 'months', 'names');
+				$monthAbbreviations = XXX_I18n_Translation::get('dateTime', 'months', 'abbreviations');
+			
+				$isMonth = false;
+				
+				for ($j = 0, $jEnd = XXX_Array::getFirstLevelItemTotal($monthNames); $j < $jEnd; ++$j)
+				{
+					if (XXX_String::convertToLowerCase($monthNames[$j]) == XXX_String::convertToLowerCase($filteredPart))
+					{
+						$filteredPart = $j + 1;
+						
+						$isMonth = true;
+						
+						break;
+					}
+				}
+				
+				if (!$isMonth)
+				{
+					for ($j = 0, $jEnd = XXX_Array::getFirstLevelItemTotal($monthAbbreviations); $j < $jEnd; ++$j)
+					{
+						if (XXX_String::convertToLowerCase($monthAbbreviations[$j]) == XXX_String::convertToLowerCase($filteredPart))
+						{
+							$filteredPart = $j + 1;
+						
+							$isMonth = true;
+							
+							break;
+						}
+					}
+				}
+				
+				
+				$isDayOfTheWeek = false;
+			
+				$dayOfTheWeekNames = XXX_I18n_Translation::get('dateTime', 'daysOfTheWeek', 'names');
+				$dayOfTheWeekAbbreviations = XXX_I18n_Translation::get('dateTime', 'daysOfTheWeek', 'abbreviations');
+				
+				for ($j = 0, $jEnd = XXX_Array::getFirstLevelItemTotal($dayOfTheWeekNames); $j < $jEnd; ++$j)
+				{
+					if (XXX_String::convertToLowerCase($dayOfTheWeekNames[$j]) == XXX_String::convertToLowerCase($filteredPart))
+					{
+						$isDayOfTheWeek = true;
+						
+						break;
+					}
+				}
+				
+				if (!$isDayOfTheWeek)
+				{
+					for ($j = 0, $jEnd = XXX_Array::getFirstLevelItemTotal($dayOfTheWeekAbbreviations); $j < $jEnd; ++$j)
+					{
+						if (XXX_String::convertToLowerCase($dayOfTheWeekAbbreviations[$j]) == XXX_String::convertToLowerCase($filteredPart))
+						{
+							$isDayOfTheWeek = true;
+							
+							break;
+						}
+					}
+				}
+				
+				if (!$isDayOfTheWeek)
+				{
+						
+					$filteredParts[] = $filteredPart;
+				}
+			}
+			
+			XXX_Type::peakAtVariable($filteredParts);
+			
+			$parts = $filteredParts;
+			
+			if (XXX_Array::getFirstLevelItemTotal($parts) == 0)
+			{			
+			}
+			else if (XXX_Array::getFirstLevelItemTotal($parts) == 1)
+			{
+				switch ($dateFormat)
+				{
+					case 'dateMonthYear':
+						$newDate = XXX_Type::makeInteger($parts[0]);
+						break;
+					case 'monthDateYear':
+						$newMonth = XXX_Type::makeInteger($parts[0]);
+						break;
+					case 'yearMonthDate':
+						$newYear = XXX_Type::makeInteger($parts[0]);
+						break;
+				}
+			}
+			else if (XXX_Array::getFirstLevelItemTotal($parts) == 2)
+			{
+				switch ($dateFormat)
+				{
+					case 'dateMonthYear':
+						$newDate = XXX_Type::makeInteger($parts[0]);
+						if ($parts[1] != '')
+						{
+							$newMonth = XXX_Type::makeInteger($parts[1]);
+						}
+						break;
+					case 'monthDateYear':
+						$newMonth = XXX_Type::makeInteger($parts[0]);
+						if ($parts[1] != '')
+						{
+							$newDate = XXX_Type::makeInteger($parts[1]);
+						}
+						break;
+					case 'yearMonthDate':
+						$newYear = XXX_Type::makeInteger($parts[0]);
+						if ($parts[1] != '')
+						{
+							$newMonth = XXX_Type::makeInteger($parts[1]);
+						}
+						break;
+				}
+			}
+			else if (XXX_Array::getFirstLevelItemTotal($parts) >= 3)
+			{
+				switch ($dateFormat)
+				{
+					case 'dateMonthYear':
+						$newDate = XXX_Type::makeInteger($parts[0]);
+						$newMonth = XXX_Type::makeInteger($parts[1]);
+						if ($parts[2] != '')
+						{
+							$newYear = XXX_Type::makeInteger($parts[2]);
+						}
+						break;
+					case 'monthDateYear':
+						$newMonth = XXX_Type::makeInteger($parts[0]);
+						$newDate = XXX_Type::makeInteger($parts[1]);
+						if ($parts[2] != '')
+						{
+							$newYear = XXX_Type::makeInteger($parts[2]);
+						}
+						break;
+					case 'yearMonthDate':
+						$newYear = XXX_Type::makeInteger($parts[0]);
+						$newMonth = XXX_Type::makeInteger($parts[1]);
+						if ($parts[2] != '')
+						{
+							$newDate = XXX_Type::makeInteger($parts[2]);
+						}
+						break;
+				}
+			}
+			
+			$newMonth = XXX_Number::absolute($newMonth);			
+			$newMonth %= 12;
+			if ($newMonth == 0)
+			{
+				$newMonth = 12;
+			}
+			
+			$newDate = XXX_Number::absolute($newDate);
+			$newDate %= 31;
+			if ($newDate == 0)
+			{
+				$newDate = 31;
+			}
+			
+			if ($newYear >= 0 && $newYear <= 100)
+			{
+				$currentYear = XXX_TimestampHelpers::getCurrentYear();
+				$tempFutureYear = 2000 + $newYear;
+				$tempPastYear = 1900 + $newYear;
+				
+				if ($tempFutureYear <= $currentYear + 10)
+				{
+					$newYear = $tempFutureYear;
+				}
+				else
+				{
+					$newYear = $tempPastYear;
+				}
+			}
+			
+			if (!XXX_TimestampHelpers::isExistingDate($newYear, $newMonth, $newDate))
+			{
+				//XXX_PHP::errorNotification(0, 'Defaulting back ' . $newYear . '-' . $newMonth . '-' . $newDate . ' to now');
+				
+				$newDate = $date;
+				$newMonth = $month;
+				$newYear = $year;
+			}
+			
+			//XXX_PHP::errorNotification(0, 'Defaulting back ' . $newYear . '-' . $newMonth . '-' . $newDate . ' to now');
+		}
+				
+		$result = array
+		(
+			'date' => $newDate,
+			'month' => $newMonth,
+			'year' => $newYear
+		);
+		
+		return $result;
+	}
 }
 
 ?>

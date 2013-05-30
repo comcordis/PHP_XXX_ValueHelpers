@@ -507,6 +507,19 @@ abstract class XXX_Array
 		
 		$currentItem = $value;
 	}
+	
+	
+	public static function deleteValue ($array, $value)
+	{
+		if(($key = array_search($value, $array)) !== false)
+		{
+			unset($array[$key]);
+		}
+		
+		$array = self::filterOutUndefined($array);
+
+		return $array;
+	}	
 }
 
 ?>

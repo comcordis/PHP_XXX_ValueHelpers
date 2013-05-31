@@ -1414,6 +1414,8 @@ abstract class XXX_TimestampHelpers
 	
 	public static function parseDateValue ($dateValue, $dateFormat)
 	{
+		$original = $dateValue;
+		
 		XXX_PHP::errorNotification(0, 'Parsing date value ' . $dateValue);
 		
 		$dateFormat = XXX_Default::toOption($dateFormat, array('dateMonthYear', 'monthDateYear', 'yearMonthDate'), 'dateMonthYear');
@@ -1442,7 +1444,6 @@ abstract class XXX_TimestampHelpers
 			for ($i = 0, $iEnd = XXX_Array::getFirstLevelItemTotal($parts); $i < $iEnd; ++$i)
 			{
 				$filteredPart = XXX_String::trim($parts[$i]);
-				
 				
 				$monthNames = XXX_I18n_Translation::get('dateTime', 'months', 'names');
 				$monthAbbreviations = XXX_I18n_Translation::get('dateTime', 'months', 'abbreviations');
@@ -1512,7 +1513,7 @@ abstract class XXX_TimestampHelpers
 				}
 			}
 			
-			XXX_Type::peakAtVariable($filteredParts);
+			//XXX_Type::peakAtVariable($filteredParts);
 			
 			$parts = $filteredParts;
 			
@@ -1636,6 +1637,7 @@ abstract class XXX_TimestampHelpers
 				
 		$result = array
 		(
+			'original' => $original,
 			'date' => $newDate,
 			'month' => $newMonth,
 			'year' => $newYear

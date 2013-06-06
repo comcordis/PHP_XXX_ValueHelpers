@@ -1189,7 +1189,7 @@ abstract class XXX_TimestampHelpers
 	}
 	
 	
-	public function normalizeTimestampString ($timestampString)
+	public static function normalizeTimestampString ($timestampString)
 	{
 		$timestamp = self::convertTimestampStringToTimestamp($timestampString);
 		
@@ -1203,7 +1203,7 @@ abstract class XXX_TimestampHelpers
 	}
 	
 	
-	public function getPeriodicInformation ()
+	public static function getPeriodicInformation ()
 	{
 		$timestamp = new XXX_Timestamp();
 		$timestampParts = $timestamp->parse(true);

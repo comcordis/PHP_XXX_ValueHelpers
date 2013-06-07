@@ -66,8 +66,8 @@ class XXX_Timestamp
 		$monthOfTheYear = date('n', $this->timestamp);
 		
 		$hour = date('G', $this->timestamp);
-		$minute = XXX_Type::makeInteger(date('i', $this->timestamp));
-		$second = XXX_Type::makeInteger(date('s', $this->timestamp));
+		$minute = date('i', $this->timestamp);
+		$second = date('s', $this->timestamp);
 		
 		$meridiem = 'am';
 		
@@ -94,17 +94,17 @@ class XXX_Timestamp
 		$parts = array
 		(
 			'timestamp' => $this->timestamp,
-			'year' => $year,
-			'yearShort' => $yearShort,
-			'month' => $monthOfTheYear,
-			'monthOfTheYear' => $monthOfTheYear,
-			'date' => $dayOfTheMonth,
-			'dayOfTheMonth' => $dayOfTheMonth,
-			'dayOfTheWeek' => $dayOfTheWeek,
-			'hour' => $hour,
-			'hourShort' => $hourShort,
-			'minute' => $minute,
-			'second' => $second,
+			'year' => XXX_Type::makeInteger($year),
+			'yearShort' => XXX_Type::makeInteger($yearShort),
+			'month' => XXX_Type::makeInteger($monthOfTheYear),
+			'monthOfTheYear' => XXX_Type::makeInteger($monthOfTheYear),
+			'date' => XXX_Type::makeInteger($dayOfTheMonth),
+			'dayOfTheMonth' => XXX_Type::makeInteger($dayOfTheMonth),
+			'dayOfTheWeek' => XXX_Type::makeInteger($dayOfTheWeek),
+			'hour' => XXX_Type::makeInteger($hour),
+			'hourShort' => XXX_Type::makeInteger($hourShort),
+			'minute' => XXX_Type::makeInteger($minute),
+			'second' => XXX_Type::makeInteger($second),
 			'meridiem' => $meridiem,
 			'iso8601' => $iso8601,
 			'string' => $iso8601
@@ -112,11 +112,11 @@ class XXX_Timestamp
 		
 		if ($extended)
 		{
-			$parts['dayTotalInMonth'] = XXX_TimestampHelpers::getDayTotalInMonth($year, $monthOfTheYear);
-			$parts['dayTotalInYear'] = XXX_TimestampHelpers::getDayTotalInYear($year);
-			$parts['dayOfTheYear'] = XXX_TimestampHelpers::getDayOfTheYear($year, $monthOfTheYear, $dayOfTheMonth);
+			$parts['dayTotalInMonth'] = XXX_Type::makeInteger(XXX_TimestampHelpers::getDayTotalInMonth($year, $monthOfTheYear));
+			$parts['dayTotalInYear'] = XXX_Type::makeInteger(XXX_TimestampHelpers::getDayTotalInYear($year));
+			$parts['dayOfTheYear'] = XXX_Type::makeInteger(XXX_TimestampHelpers::getDayOfTheYear($year, $monthOfTheYear, $dayOfTheMonth));
 			$parts['leapYear'] = XXX_TimestampHelpers::isLeapYear($year);
-			$parts['weekOfTheYear'] = XXX_Timestamphelpers::iso8601_getWeekOfTheYear($year, $monthOfTheYear, $dayOfTheMonth);
+			$parts['weekOfTheYear'] = XXX_Type::makeInteger(XXX_Timestamphelpers::iso8601_getWeekOfTheYear($year, $monthOfTheYear, $dayOfTheMonth));
 		}
 		
 		return $parts;

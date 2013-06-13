@@ -1645,6 +1645,94 @@ abstract class XXX_TimestampHelpers
 		
 		return $result;
 	}
+	
+	public static function convertLocalTimestampToUTCTimestampForTimezoneCity ($localTimestamp = 0, $timezoneCity = 'UTC')
+	{
+		$tempTimestamp = new XXX_Timestamp($localTimestamp);
+		$tempTimestampParts = $tempTimestamp->parse();
+				
+		$tempDateTime = new DateTime();
+		$tempDateTime->setTimezone(new DateTimeZone($timezoneCity));
+		$tempDateTime->setDate($tempTimestampParts['year'], $tempTimestampParts['month'], $tempTimestampParts['date']);
+		$tempDateTime->setTime($tempTimestampParts['hour'], $tempTimestampParts['minute'], $tempTimestampParts['second']);
+		
+		$localOffset = $tempDateTime->getOffset();
+		
+		$utcTimestamp = $localTimestamp - $localOffset;
+		
+		return $utcTimestamp;
+	}
+	
+	public static function getLocalTimestampForUTCTimestampForTimezoneCity ($utcTimestamp = 0, $timezoneCity = 'UTC')
+	{
+		$tempDateTime = new DateTime('@' . $utcTimestamp);
+		$tempDateTime->setTimezone(new DateTimeZone('UTC'));
+		
+		$tempDateTime->setTimezone(new DateTimeZone($timezoneCity));
+		
+		$localOffset = $tempDateTime->getOffset();
+		
+		$localTimestamp = $utcTimestamp + $localOffset;
+		
+		return $localTimestamp;
+	}
+	
+	public static function getUTCTimestampForLocalTimestampForTimezoneCity ($localTimestamp = 0, $timezoneCity = 'UTC')
+	{
+		$tempDateTime = new DateTime();
+		$tempDateTime->setTimezone(new DateTimeZone($timezoneCity));
+		
+		$tempDateTime->setTimestamp($localTimestamp);
+		
+		$localOffset = $tempDateTime->getOffset();
+				
+		$utcTimestamp = $localTimestamp - $localOffset;
+		
+		return $utcTimestamp;
+	}
+	
+	public static function getOffsetForLocalTimestampForTimezoneCity ($localTimestamp = 0, $timezoneCity = 'UTC')
+	{
+		$tempDateTime = new DateTime();
+		$tempDateTime->setTimezone(new DateTimeZone($timezoneCity));
+		
+		$tempDateTime->setTimestamp($localTimestamp);
+		
+		$localOffset = $tempDateTime->getOffset();
+		
+		return $localOffset;
+	}
+	
+	public static function getTimezoneAbbreviationForTimezoneCity ($timezoneCity = 'UTC')
+	{
+		$result = false;
+		
+		if($timezoneCity)
+		{
+			$timezoneAbbreviationList = timezone_abbreviations_list();
+			
+			$abb_array = array();
+			foreach ($timezoneAbbreviationList as $abb_key => $abb_val)
+			{
+				foreach ($abb_val as $key => $value)
+				{
+					$value['abb'] = $abb_key;
+					array_push($abb_array, $value);
+				}
+			}
+			
+			foreach ($abb_array as $key => $value)
+			{
+				if ($value['timezone_id'] == $timezoneCity)
+				{
+					$result = strtoupper($value['abb']);
+					
+					break;
+				}
+			}
+		}
+		return $result;
+	}
 }
 
 ?>

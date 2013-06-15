@@ -73,6 +73,15 @@ abstract class XXX_TimestampHelpers
 			
 			return $timestampPart;
 		}
+		
+		public static function getTimestampPartsForPath ()
+		{
+			$timestamp = new XXX_Timestamp();
+			
+			$result = $timestamp->parse();
+			
+			return $result;
+		}
 	
 	// Relative
 		

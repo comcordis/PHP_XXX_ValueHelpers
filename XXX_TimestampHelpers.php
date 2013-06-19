@@ -1657,6 +1657,10 @@ abstract class XXX_TimestampHelpers
 	
 	public static function convertLocalTimestampToUTCTimestampForTimezoneCity ($localTimestamp = 0, $timezoneCity = 'UTC')
 	{
+		if (XXX_String::trim($timezoneCity) == '')
+		{
+			$timezoneCity = 'UTC';
+		}
 		$tempTimestamp = new XXX_Timestamp($localTimestamp);
 		$tempTimestampParts = $tempTimestamp->parse();
 				
@@ -1674,6 +1678,11 @@ abstract class XXX_TimestampHelpers
 	
 	public static function getLocalTimestampForUTCTimestampForTimezoneCity ($utcTimestamp = 0, $timezoneCity = 'UTC')
 	{
+		if (XXX_String::trim($timezoneCity) == '')
+		{
+			$timezoneCity = 'UTC';
+		}
+		
 		$tempDateTime = new DateTime('@' . $utcTimestamp);
 		$tempDateTime->setTimezone(new DateTimeZone('UTC'));
 		
@@ -1688,6 +1697,10 @@ abstract class XXX_TimestampHelpers
 	
 	public static function getUTCTimestampForLocalTimestampForTimezoneCity ($localTimestamp = 0, $timezoneCity = 'UTC')
 	{
+		if (XXX_String::trim($timezoneCity) == '')
+		{
+			$timezoneCity = 'UTC';
+		}
 		$tempDateTime = new DateTime();
 		$tempDateTime->setTimezone(new DateTimeZone($timezoneCity));
 		
@@ -1702,6 +1715,10 @@ abstract class XXX_TimestampHelpers
 	
 	public static function getOffsetForLocalTimestampForTimezoneCity ($localTimestamp = 0, $timezoneCity = 'UTC')
 	{
+		if (XXX_String::trim($timezoneCity) == '')
+		{
+			$timezoneCity = 'UTC';
+		}
 		$tempDateTime = new DateTime();
 		$tempDateTime->setTimezone(new DateTimeZone($timezoneCity));
 		

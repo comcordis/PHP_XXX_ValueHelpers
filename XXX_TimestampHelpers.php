@@ -1655,6 +1655,11 @@ abstract class XXX_TimestampHelpers
 		return $result;
 	}
 	
+	public static function convertUTCTimestampToLocalTimestampForTimezoneCity ($utcTimestamp = 0, $timezoneCity = 'UTC')
+	{
+		return self::getLocalTimestampForUTCTimestampForTimezoneCity($utcTimestamp, $timezoneCity);
+	}
+	
 	public static function convertLocalTimestampToUTCTimestampForTimezoneCity ($localTimestamp = 0, $timezoneCity = 'UTC')
 	{
 		if (XXX_String::trim($timezoneCity) == '')

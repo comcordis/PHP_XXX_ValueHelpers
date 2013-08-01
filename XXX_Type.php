@@ -550,6 +550,8 @@ abstract class XXX_Type
 			if (self::$comments)
 			{
 				echo ' // (' . get_class($value) . ') Object / Class / Instance';
+				
+				// get_object_vars($value)
 			}
 			echo $renderedLineSeparator;
 		}

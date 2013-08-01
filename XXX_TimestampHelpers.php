@@ -1312,6 +1312,153 @@ abstract class XXX_TimestampHelpers
 	
 	
 	
+	public static function composeTimeValue ($timestamp, $clockType)
+	{
+		$clockType = XXX_Default::toOption($clockType, array('12', '24'), '24');
+		
+		$timeValue = '';
+		
+		if (XXX_Type::isInteger($timestamp))
+		{
+			$timestamp = new XXX_Timestamp($timestamp);
+		}
+		
+		$timestampParts = $timestamp->parse();
+		
+		$hour = $timestampParts['hour'];
+		$minute = $timestampParts['minute'];
+		$meridiem = '';
+		
+		if ($clockType == '12')
+		{
+			if ($hour < 12)
+			{
+				$meridiem = 'am';
+				
+				if ($hour == 0)
+				{
+					$hour = 12;
+				}
+			}
+			else
+			{				
+				$meridiem = 'pm';
+				
+				$hour -= 12;
+				
+				if ($hour == 0)
+				{
+					$hour = 12;
+				}
+			}
+		}
+				
+		$composedHour = XXX_String::padLeft($hour, '0', 2);
+		
+		$composedMinute = XXX_String::padLeft($minute, '0', 2);
+				
+		$composedMeridiem = '';
+		
+		$meridiemNames = XXX_I18n_Translation::get('dateTime', 'meridiems', 'abbreviations');
+		
+		if ($meridiem == 'am')
+		{
+			$composedMeridiem = $meridiemNames[0];
+		}
+		else
+		{
+			$composedMeridiem = $meridiemNames[1];
+		}
+		
+		switch ($clockType)
+		{
+			case '12':
+				$timeValue = $composedHour . ':' . $composedMinute . ' ' . $composedMeridiem;
+				break;
+			case '24':
+				$timeValue = $composedHour . ':' . $composedMinute;
+				break;
+		}
+		
+		return $timeValue;
+	}
+	
+	public static function composeDateValue ($timestamp, $dateFormat)
+	{
+		$dateFormat = XXX_Default::toOption($dateFormat, array('dateMonthYear', 'monthDateYear', 'yearMonthDate'), 'dateMonthYear');
+		
+		$separator = ' ';
+		
+		$dateValue = '';
+		
+		if (XXX_Type::isInteger($timestamp))
+		{
+			$timestamp = new XXX_Timestamp($timestamp);
+		}
+		
+		$timestampParts = $timestamp->parse();
+		
+		$composedYear = XXX_String::padLeft($timestampParts['year'], '0', 4);
+		$composedMonth = XXX_String::padLeft($timestampParts['month'], '0', 2);
+		$composedDate = XXX_String::padLeft($timestampParts['date'], '0', 2);
+		
+		$composedMonthName = '';
+		
+		$monthNames = array
+		(
+			XXX_I18n_Translation::get('custom', 'calendar', 'months', 'abbreviations', 'january'),
+			XXX_I18n_Translation::get('custom', 'calendar', 'months', 'abbreviations', 'february'),
+			XXX_I18n_Translation::get('custom', 'calendar', 'months', 'abbreviations', 'march'),
+			XXX_I18n_Translation::get('custom', 'calendar', 'months', 'abbreviations', 'april'),
+			XXX_I18n_Translation::get('custom', 'calendar', 'months', 'abbreviations', 'may'),
+			XXX_I18n_Translation::get('custom', 'calendar', 'months', 'abbreviations', 'june'),
+			XXX_I18n_Translation::get('custom', 'calendar', 'months', 'abbreviations', 'july'),
+			XXX_I18n_Translation::get('custom', 'calendar', 'months', 'abbreviations', 'august'),
+			XXX_I18n_Translation::get('custom', 'calendar', 'months', 'abbreviations', 'september'),
+			XXX_I18n_Translation::get('custom', 'calendar', 'months', 'abbreviations', 'october'),
+			XXX_I18n_Translation::get('custom', 'calendar', 'months', 'abbreviations', 'november'),
+			XXX_I18n_Translation::get('custom', 'calendar', 'months', 'abbreviations', 'december')
+		);
+		
+		$composedMonthName = $monthNames[$timestampParts['month'] - 1];
+		
+		$composedDayOfTheWeekName = '';
+		$dayOfTheWeekNames = array
+		(
+			XXX_I18n_Translation::get('custom', 'calendar', 'daysOfTheWeek', 'abbreviations', 'monday'),
+			XXX_I18n_Translation::get('custom', 'calendar', 'daysOfTheWeek', 'abbreviations', 'tuesday'),
+			XXX_I18n_Translation::get('custom', 'calendar', 'daysOfTheWeek', 'abbreviations', 'wednesday'),
+			XXX_I18n_Translation::get('custom', 'calendar', 'daysOfTheWeek', 'abbreviations', 'thursday'),
+			XXX_I18n_Translation::get('custom', 'calendar', 'daysOfTheWeek', 'abbreviations', 'friday'),
+			XXX_I18n_Translation::get('custom', 'calendar', 'daysOfTheWeek', 'abbreviations', 'saturday'),
+			XXX_I18n_Translation::get('custom', 'calendar', 'daysOfTheWeek', 'abbreviations', 'sunday')
+		);
+		
+		$composedDayOfTheWeekName = $dayOfTheWeekNames[$timestampParts['dayOfTheWeek'] - 1];
+		
+		switch ($dateFormat)
+		{
+			case 'dateMonthYear':
+				$dateValue = $composedDayOfTheWeekName . ' ' . $composedDate . $separator . $composedMonthName . $separator . $composedYear;
+				break;
+			case 'monthDateYear':
+				$dateValue = $composedMonthName . $separator . $composedDayOfTheWeekName . ' ' . $composedDate . $separator . $composedYear;
+				break;
+			case 'yearMonthDate':
+				$dateValue = $composedYear . $separator . $composedMonthName . $separator . $composedDayOfTheWeekName . ' ' . $composedDate;
+				break;
+		}
+		
+		return $dateValue;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	public static function parseTimeValue ($timeValue = '', $clockType = '24')
 	{
 		$clockType = XXX_Default::toOption($clockType, array('12', '24'), '24');

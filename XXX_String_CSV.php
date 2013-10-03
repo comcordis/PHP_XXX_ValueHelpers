@@ -32,7 +32,7 @@ abstract class XXX_String_CSV
 {
 	const CLASS_NAME = 'XXX_String_CSV';
 	
-	public static function compose ($array, $glue = ',')
+	public static function compose ($array, $glue = ',', $useCommaForNumbers = false)
 	{
 		$result = false;
 		
@@ -65,7 +65,14 @@ abstract class XXX_String_CSV
 					}
 					else
 					{
-						$result .= $value;
+						if ($useCommaForNumbers)
+						{
+							$result .= XXX_String::replace($value, '.', ',');
+						}
+						else
+						{
+							$result .= $value;
+						}
 					}					
 				}
 				

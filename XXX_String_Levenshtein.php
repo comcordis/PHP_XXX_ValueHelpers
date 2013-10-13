@@ -7,8 +7,8 @@ abstract class XXX_String_Levenshtein
 	{
 		$cost = 0;
 		
-		$m = self::getCharacterLength($a);
-		$n = self::getCharacterLength($b);
+		$m = XXX_String::getCharacterLength($a);
+		$n = XXX_String::getCharacterLength($b);
 		
 		$c = 0;
 		
@@ -38,7 +38,7 @@ abstract class XXX_String_Levenshtein
 			
 			for ($j = 1, $jEnd = $n + 1; $j < $jEnd; ++$j)
 			{
-				$cost = (self::getPart($a, $i - 1, 1) == self::getPart($b, $i - 1, 1)) ? 0 : 1;
+				$cost = (XXX_String::getPart($a, $i - 1, 1) == XXX_String::getPart($b, $i - 1, 1)) ? 0 : 1;
 				$r[$i][$j] = XXX_Number::lowest(($r[$i - 1][$j] + 1), ($r[$i][$j - 1] + 1), ($r[$i - 1][$j - 1] + $cost));
 			}
 		}

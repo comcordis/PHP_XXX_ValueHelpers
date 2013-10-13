@@ -22,5 +22,8 @@ include_once 'XXX_Object.php';
 include_once 'XXX_Timestamp.php';
 include_once 'XXX_TimestampHelpers.php';
 include_once 'XXX_Type.php';
+include_once 'XXX_Search_SimpleIndex.php';
+include_once 'XXX_Search_InvertedIndex.php';
+include_once 'XXX_String_Search.php';
 
 ?>

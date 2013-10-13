@@ -55,25 +55,7 @@ abstract class XXX_String_CSV
 						$result .= $glue;
 					}
 					
-					if (XXX_Type::isString($value) && XXX_String::findFirstPosition($value, ' ') !== false)
-					{
-						$result .= '"' . XXX_String::addSlashes($value) . '"';
-					}
-					else if (XXX_Type::isBoolean($value))
-					{
-						$result .= $value ? 'true' : 'false';
-					}
-					else
-					{
-						if ($useCommaForNumbers)
-						{
-							$result .= XXX_String::replace($value, '.', ',');
-						}
-						else
-						{
-							$result .= $value;
-						}
-					}					
+					$result .= self::formatValue($value, $useCommaForNumbers);
 				}
 				
 				$result .= XXX_String::$lineSeparator;
@@ -82,6 +64,33 @@ abstract class XXX_String_CSV
 		else
 		{
 			// Array should have rows and be 2 levels deep [row][column]
+		}
+		
+		return $result;
+	}
+	
+	public static function formatValue ($value = '', $useCommaForNumbers = false)
+	{
+		$result = '';
+		
+		if (XXX_Type::isString($value) && XXX_String::findFirstPosition($value, ' ') !== false)
+		{
+			$result .= '"' . XXX_String::addSlashes($value) . '"';
+		}
+		else if (XXX_Type::isBoolean($value))
+		{
+			$result .= $value ? 'true' : 'false';
+		}
+		else
+		{
+			if ($useCommaForNumbers)
+			{
+				$result .= XXX_String::replace($value, '.', ',');
+			}
+			else
+			{
+				$result .= $value;
+			}
 		}
 		
 		return $result;

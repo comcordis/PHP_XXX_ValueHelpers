@@ -183,7 +183,7 @@ class XXX_Search_SimpleIndex
 				'suggestedValue' => $sourceValue,
 				'complement' => '',
 				'label' => $label,
-				'data' => arraY()
+				'data' => array()
 			);
 			
 			if ($this->hasData)

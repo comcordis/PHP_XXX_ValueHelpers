@@ -434,7 +434,7 @@ abstract class XXX_Array
 		
 		foreach ($array as $value)
 		{
-			if (!XXX_Type::isValue($value))
+			if (!XXX_Type::isEmpty($value))
 			{
 				$cleanArray[] = $value;	
 			}

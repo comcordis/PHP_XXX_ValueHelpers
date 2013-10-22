@@ -8,7 +8,7 @@ abstract class XXX_String_Search
 	// Terms (Split by , ( ) or space)
 	////////////////////
 	
-	public static function splitToTerms ($sentence, $sorted)
+	public static function splitToTerms ($sentence, $sorted = true)
 	{
 		$sentence = XXX_Type::makeString($sentence);
 		

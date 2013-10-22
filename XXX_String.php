@@ -810,6 +810,14 @@ Special characters:  : ; < = > ? @ [ \ ] ^ _ ` { | } ~';
 		return XXX_Array::joinValuesToString($parts, $separator);
 	}
 	
+	public static function filterSuggestion ($suggestion = '')
+	{
+		$suggestion = XXX_String_Pattern::replace($suggestion, '\\s{2,}', '', ' ');
+		$suggestion = XXX_String::trimLeft($suggestion);
+		
+		return $suggestion;
+	}
+	
 	////////////////////
 	// Line separator <br>
 	////////////////////
@@ -1832,7 +1840,6 @@ Special characters:  : ; < = > ? @ [ \ ] ^ _ ` { | } ~';
 		
 		return $result;
 	}
-	
 }
 
 ?>

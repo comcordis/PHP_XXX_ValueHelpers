@@ -207,6 +207,7 @@ class XXX_Search_SimpleIndex
 		$result = array
 		(
 			'type' => 'processed',
+			'valueAskingSuggestions' => $this->query,
 			'suggestions' => $this->getSuggestions()
 		);
 		

@@ -1960,6 +1960,82 @@ abstract class XXX_TimestampHelpers
 		}
 		return $result;
 	}
+	
+	public static function getMonthAndYearBetween ($beginYear = false, $beginMonth = false, $endYear = false, $endMonth = false)
+	{
+		$result = array();
+		
+		$currentTimestamp = new XXX_Timestamp();
+		$currentTimestampParts = $currentTimestamp->parse();
+		
+		if ($beginYear === false)
+		{
+			$beginYear = $currentTimestampParts['year'];
+		}
+		
+		if ($beginMonth === false)
+		{
+			$beginMonth = $currentTimestampParts['month'];
+		}
+		
+		
+		if ($endYear === false)
+		{
+			$endYear = $currentTimestampParts['year'];
+		}
+		
+		if ($endMonth === false)
+		{
+			$endMonth = $currentTimestampParts['month'];
+		}
+		
+		$timestampsPerMonth = array();
+		
+		for ($year = $beginYear, $yearEnd = $endYear; $year <= $yearEnd; ++$year)
+		{
+			for ($month = 1, $monthEnd = 12; $month <= $monthEnd; ++$month)
+			{
+				$addMonthAndYear = false;
+				
+				if ($year == $beginYear && $year == $endYear)
+				{
+					if ($month >= $beginMonth && $month <= $endMonth)
+					{
+						$addMonthAndYear = true;
+					}
+				}
+				else if ($year == $beginYear)
+				{
+					if ($month >= $beginMonth)
+					{
+						$addMonthAndYear = true;
+					}
+				}
+				else if ($year == $endYear)
+				{
+					if ($month <= $endMonth)
+					{
+						$addMonthAndYear = true;
+					}
+				}
+				else if ($year > $beginYear && $year < $endYear)
+				{
+					$addMonthAndYear = true;
+				}
+				
+				if ($addMonthAndYear)
+				{
+					$result[] = array
+					(
+						'year' => $year,
+						'month' => $month
+					);
+				}
+			}
+		}
+		
+		return $result;
+	}
 }
 
 ?>

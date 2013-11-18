@@ -522,7 +522,7 @@ abstract class XXX_Type
 						}
 						else if (self::$arrayLayoutMethod == 'lean')
 						{
-							self::peakAtVariableSub($subValue, $spacing + 1, '\'' . $subKey . '\'', ' => ', ($i < $iEnd - 1) ? ',' : '');	
+							self::peakAtVariableSub($subValue, $spacing + 1, '\'' . XXX_String::addSlashes($subKey) . '\'', ' => ', ($i < $iEnd - 1) ? ',' : '');	
 						}
 						
 						++$i;

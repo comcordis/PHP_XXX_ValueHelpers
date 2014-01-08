@@ -126,7 +126,10 @@ abstract class XXX_String_CSV
 	
 	public static function parseLine ($line = '', $separator = ',')
 	{
-		$matches = XXX_String_Pattern::getMatches($line, '(?<=^|' . $separator . ')(?:\\s*(?:"((?:[^\\\\"]|\\\\"|\\\\)*)"|\'((?:[^\\\\"]|\\\\\'|\\\\)*)\'|(-?[0-9]+(?:\\.[0-9]+)?(?:[eE][-+]?[0-9]+)?)|([^' . $separator . ']+)|)\\s*)(?=$|' . $separator . ')', 'imu');
+		// u pattern modifier doesn't work correctly...
+		
+		$matches = XXX_String_Pattern::getMatches($line, '(?<=^|' . XXX_String_Pattern::escape($separator) . ')(?:\\s*(?:"((?:[^\\\\"]|\\\\"|\\\\)*)"|\'((?:[^\\\\"]|\\\\\'|\\\\)*)\'|(-?[0-9]+(?:\\.[0-9]+)?(?:[eE][-+]?[0-9]+)?)|([^' . XXX_String_Pattern::escape($separator) . ']+)|)\\s*)(?=$|' . XXX_String_Pattern::escape($separator) . ')', 'im');
+		
 		
     	$matchesTotal = XXX_Array::getFirstLevelItemTotal($matches[0]);
     	
@@ -153,6 +156,15 @@ abstract class XXX_String_CSV
     			$value = XXX_String::removeSlashes(XXX_String::trim($matches[4][$j]));
     		}
     		
+    		if ($value === 'false' || $value === 'FALSE')
+    		{
+    			$value = false;
+    		}
+    		else if ($value === 'true' || $value === 'TRUE')
+    		{
+    			$value = true;
+    		}
+    		    		
     		$parsedLine[] = $value;
     	}
     			
@@ -186,6 +198,75 @@ abstract class XXX_String_CSV
 	    }
 	    
 	    return $parsedLines;
+	}
+	
+	public static function distributeCSVFileOverSmallerCSVFiles ($csvFile)
+	{
+		$csvFileIdentifier = XXX_Path_Local::getIdentifier($csvFile);
+		$csvFileParentPath = XXX_Path_Local::getParentPath($csvFile);
+		
+		$readFile = $csvFile;
+						
+		$maximumFileSize = 1048576;
+		
+		$filesWritten = 0;
+		
+		$bytesWritten = 0;
+		
+		$lineCount = 0;
+		
+		$headerLine = '';
+		
+		$readHandle = fopen($readFile, 'r');
+		fseek($readHandle, 0);
+		
+		while (!feof($readHandle))
+		{
+			$line = fgets($readHandle);
+			
+			$line = trim($line);
+			
+			if ($bytesWritten == 0 || $bytesWritten > $maximumFileSize)
+			{
+				$bytesWritten = 0;
+				
+				$filesWritten += 1;
+				
+				if ($writeHandle)
+				{
+					fclose($writeHandle);
+				}
+				
+				$writeFile = XXX_Path_Local::extendPath($csvFileParentPath, array('part.' . $filesWritten . '.' . $csvFileIdentifier));
+				
+				$writeHandle = fopen($writeFile, 'w');
+				
+				if ($bytesWritten == 0 && $filesWritten == 1)
+				{
+					$headerLine = $line;
+				}
+				
+				if ($filesWritten > 1)
+				{
+					fputs($writeHandle, $headerLine . XXX_String::$lineSeparator);
+				}
+			}
+			
+			fputs($writeHandle, $line . XXX_String::$lineSeparator);
+			
+			$bytesWritten += strlen($line);
+			
+			++$lineCount;
+		}
+		
+		fclose($readHandle);
+		
+		if ($writeHandle)
+		{
+			fclose($writeHandle);
+		}
+		
+		return $lineCount;
 	}
 }
 

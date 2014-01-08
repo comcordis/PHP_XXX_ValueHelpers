@@ -429,7 +429,19 @@ abstract class XXX_Type
 				$arrayInformation = ' // Array (' . (XXX_Type::isNumericArray($value) ? 'numeric' : 'associative') . ') - ' . $keysOnFirstLevel . ' item(s) - ' . $depth . ' level(s)';
 			}
 			
-			if (XXX_Type::isNumericArray($value))
+			if (XXX_Type::isEmptyArray($value))
+			{
+				echo $renderedSpacing;
+				echo $identifier;
+				echo $assignmentOperator;
+				echo 'array();';
+				if (self::$comments)
+				{
+					echo $arrayInformation;
+				}
+				echo $renderedLineSeparator;				
+			}
+			else if (XXX_Type::isNumericArray($value))
 			{
 				echo $renderedSpacing;
 				echo $identifier;
@@ -551,6 +563,7 @@ abstract class XXX_Type
 			{
 				echo ' // (' . get_class($value) . ') Object / Class / Instance';
 				
+				// get_class_vars
 				// get_object_vars($value)
 			}
 			echo $renderedLineSeparator;

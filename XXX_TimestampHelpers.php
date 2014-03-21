@@ -1383,7 +1383,7 @@ abstract class XXX_TimestampHelpers
 		return $timeValue;
 	}
 	
-	public static function composeDateValue ($timestamp, $dateFormat)
+	public static function composeDateValue ($timestamp = 0, $dateFormat = 'dateMonthYear')
 	{
 		$dateFormat = XXX_Default::toOption($dateFormat, array('dateMonthYear', 'monthDateYear', 'yearMonthDate'), 'dateMonthYear');
 		

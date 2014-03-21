@@ -200,18 +200,18 @@ abstract class XXX_String_CSV
 	    return $parsedLines;
 	}
 	
-	public static function distributeCSVFileOverSmallerCSVFiles ($csvFile)
+	public static function distributeCSVFileOverSmallerCSVFiles ($csvFile = '', $maximumFileSize = 104857600, $maximumLines = 1048575)
 	{
 		$csvFileIdentifier = XXX_Path_Local::getIdentifier($csvFile);
 		$csvFileParentPath = XXX_Path_Local::getParentPath($csvFile);
 		
 		$readFile = $csvFile;
-						
-		$maximumFileSize = 1048576;
 		
 		$filesWritten = 0;
 		
 		$bytesWritten = 0;
+		
+		$linesWritten = 0;
 		
 		$lineCount = 0;
 		
@@ -226,11 +226,13 @@ abstract class XXX_String_CSV
 			
 			$line = trim($line);
 			
-			if ($bytesWritten == 0 || $bytesWritten > $maximumFileSize)
+			if ($bytesWritten == 0 || $bytesWritten > $maximumFileSize || $linesWritten > $maximumLines)
 			{
 				$bytesWritten = 0;
 				
 				$filesWritten += 1;
+				
+				$linesWritten = 0;
 				
 				if ($writeHandle)
 				{
@@ -255,6 +257,7 @@ abstract class XXX_String_CSV
 			fputs($writeHandle, $line . XXX_String::$lineSeparator);
 			
 			$bytesWritten += strlen($line);
+			$linesWritten += 1;
 			
 			++$lineCount;
 		}

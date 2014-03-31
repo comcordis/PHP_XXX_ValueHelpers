@@ -152,7 +152,11 @@ class XXX_Search_SimpleIndex
 			}
 		}
 		
+		
 		usort($this->sourceMatchers, 'XXX_Search_SimpleIndex::compareSourceMatchers');
+		
+		//XXX_Type::peakAtVariable($this->sourceValueInformations);
+		//XXX_Type::peakAtVariable($this->sourceMatchers);
 	}
 	
 	public static function compareSourceMatchers ($a, $b)

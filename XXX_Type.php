@@ -434,13 +434,11 @@ abstract class XXX_Type
 				echo $renderedSpacing;
 				echo $identifier;
 				echo $assignmentOperator;
-				
 				echo 'array();';
 				if (self::$comments)
 				{
 					echo $arrayInformation;
 				}
-				
 				echo $renderedLineSeparator;
 			}
 			else if (XXX_Type::isNumericArray($value))
@@ -565,6 +563,7 @@ abstract class XXX_Type
 			{
 				echo ' // (' . get_class($value) . ') Object / Class / Instance';
 				
+				// get_class_vars
 				// get_object_vars($value)
 			}
 			echo $renderedLineSeparator;

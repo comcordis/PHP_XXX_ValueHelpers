@@ -25,7 +25,7 @@ class XXX_Timestamp
 	// Seconds
 	public function set ($timestamp)
 	{
-		if (XXX_Type::isPositiveInteger($timestamp))
+		if (XXX_Type::isInteger($timestamp))
 		{
 			$this->timestamp = $timestamp;
 		}

@@ -56,9 +56,9 @@ abstract class XXX_TimestampHelpers
 			return $result;
 		}
 		
-		public static function getTimestampPartForFile ($short = false)
+		public static function getTimestampPartForFile ($timestamp = false, $short = false)
 		{
-			$timestamp = new XXX_Timestamp();
+			$timestamp = new XXX_Timestamp($timestamp);
 		
 			$parts = $timestamp->parse();
 			
@@ -74,9 +74,9 @@ abstract class XXX_TimestampHelpers
 			return $timestampPart;
 		}
 		
-		public static function getTimestampPartsForPath ()
+		public static function getTimestampPartsForPath ($timestamp = false)
 		{
-			$timestamp = new XXX_Timestamp();
+			$timestamp = new XXX_Timestamp($timestamp);
 			
 			$result = $timestamp->parse();
 			

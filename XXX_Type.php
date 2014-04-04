@@ -324,6 +324,11 @@ abstract class XXX_Type
 		return is_object($value);
 	}
 	
+	public static function isInstanceOfClass ($value = null, $class = '')
+	{
+		return is_a($value, $class);
+	}
+	
 	////////////////////
 	// Resource
 	////////////////////

@@ -5,7 +5,7 @@ abstract class XXX_String_Search
 	public static $separatorPattern = array('\\s*[,\\-()\\s/]\\s*', 'm');
 	
 	////////////////////
-	// Terms (Split by , ( ) or space)
+	// Terms (Split by , - ( ) or space)
 	////////////////////
 	
 	public static function splitToTerms ($sentence, $sorted = true)
@@ -18,19 +18,17 @@ abstract class XXX_String_Search
 		
 		if ($sorted)
 		{
-			// From longest to shortest
-			
 			usort($terms, 'XXX_String_Search::compareTerms');
 		}
 		
 		return $terms;
 	}
 	
-	// From longest to shortest
-	public static function compareTerms ($a, $b)
-	{
-		return XXX_String::getCharacterLength($b) - XXX_String::getCharacterLength($a);
-	}
+		// From longest to shortest
+		public static function compareTerms ($a, $b)
+		{
+			return XXX_String::getCharacterLength($b) - XXX_String::getCharacterLength($a);
+		}
 	
 	public static function getRawParts ($value)
 	{
@@ -57,52 +55,6 @@ abstract class XXX_String_Search
 					);
 					
 					$offset += $characterLength;
-				}
-			}
-		}
-		
-		return $result;
-	}
-	
-	public static function composeValueInformationSub ($value, $characterMatchingMode)
-	{
-		$result = array();
-		
-		$result['rawValue'] = $value;
-		$result['rawCharacterLength'] = XXX_String::getCharacterLength($value);
-		
-		if ($characterMatchingMode == 'simplified')
-		{
-			$result['simplifiedValue'] = '';
-			$result['simplifiedCharacterLength'] = 0;
-			
-			$result['simplifiedToRawMapping'] = array();
-			
-			for ($i = 0, $iEnd = $result['rawCharacterLength']; $i < $iEnd; ++$i)
-			{
-				$rawCharacter = XXX_String::getPart($result['rawValue'], $i, 1);
-				
-				$simplifiedCharacter = XXX_String::simplifyCharacters($rawCharacter);
-				$simplifiedCharacterCharacterLength = XXX_String::getCharacterLength($simplifiedCharacter);
-				
-				if ($simplifiedCharacterCharacterLength > 1)
-				{
-					for ($j = 0, $jEnd = $simplifiedCharacterCharacterLength; $j < $jEnd; ++$j)
-					{
-						$result['simplifiedValue'] .= XXX_String::getPart($simplifiedCharacter, $j, 1);
-						
-						$result['simplifiedToRawMapping'][] = $i;
-						
-						++$result['simplifiedCharacterLength'];
-					}
-				}
-				else
-				{
-					$result['simplifiedValue'] .= $simplifiedCharacter;
-					
-					$result['simplifiedToRawMapping'][] = $i;
-					
-					++$result['simplifiedCharacterLength'];
 				}
 			}
 		}
@@ -151,6 +103,52 @@ abstract class XXX_String_Search
 		
 		return $result;
 	}
+		
+		public static function composeValueInformationSub ($value, $characterMatchingMode)
+		{
+			$result = array();
+			
+			$result['rawValue'] = $value;
+			$result['rawCharacterLength'] = XXX_String::getCharacterLength($value);
+			
+			if ($characterMatchingMode == 'simplified')
+			{
+				$result['simplifiedValue'] = '';
+				$result['simplifiedCharacterLength'] = 0;
+				
+				$result['simplifiedToRawMapping'] = array();
+				
+				for ($i = 0, $iEnd = $result['rawCharacterLength']; $i < $iEnd; ++$i)
+				{
+					$rawCharacter = XXX_String::getPart($result['rawValue'], $i, 1);
+					
+					$simplifiedCharacter = XXX_String::simplifyCharacters($rawCharacter);
+					$simplifiedCharacterCharacterLength = XXX_String::getCharacterLength($simplifiedCharacter);
+					
+					if ($simplifiedCharacterCharacterLength > 1)
+					{
+						for ($j = 0, $jEnd = $simplifiedCharacterCharacterLength; $j < $jEnd; ++$j)
+						{
+							$result['simplifiedValue'] .= XXX_String::getPart($simplifiedCharacter, $j, 1);
+							
+							$result['simplifiedToRawMapping'][] = $i;
+							
+							++$result['simplifiedCharacterLength'];
+						}
+					}
+					else
+					{
+						$result['simplifiedValue'] .= $simplifiedCharacter;
+						
+						$result['simplifiedToRawMapping'][] = $i;
+						
+						++$result['simplifiedCharacterLength'];
+					}
+				}
+			}
+			
+			return $result;
+		}
 		
 	public static function composeMatcher ($sourceIndex, $valueInformation, $termMode, $characterMatchingMode)
 	{
@@ -459,16 +457,60 @@ abstract class XXX_String_Search
 		$matchCharacterLength = 0;
 		$matchLevenshteinDistance = 0;
 		
+		// Literal
 		$matchAtCharacterPosition = XXX_String::findFirstPosition($source, $query);
-				
+		
 		if ($matchAtCharacterPosition !== false)
 		{
 			$matchType = 'identical';
 			$matchOffset = $matchAtCharacterPosition;
 			$matchCharacterLength = $queryCharacterLength;
 		}
+		// Similar
 		else
 		{
+			// Should be at least 3 characters
+			if ($queryCharacterLength > 2 && $sourceCharacterLength > 2)
+			{
+				// See the maximum potential for mistakes
+				$maximumLevenshteinDistance = self::getMaximumLevenshteinDistanceForCharacterLength($queryCharacterLength);
+				
+				if ($maximumLevenshteinDistance > 0)
+				{
+					$characterLengthDifference = 0;
+					
+					if ($queryCharacterLength > $sourceCharacterLength)
+					{
+						$characterLengthDifference = $queryCharacterLength - $sourceCharacterLength;
+					}
+					else if ($queryCharacterLength < $sourceCharacterLength)
+					{
+						$characterLengthDifference = $sourceCharacterLength - $queryCharacterLength;
+					}
+					
+					
+					
+					if ($characterLengthDifference <= $maximumLevenshteinDistance)
+					{
+						$levenshteinDistance = XXX_String_Levenshtein::getDistance($source, $query);
+						
+						if ($levenshteinDistance <= $maximumLevenshteinDistance)
+						{
+							$matchType = 'similar';
+							$matchCharacterLength = $queryCharacterLength;						
+							$matchLevenshteinDistance = $levenshteinDistance;
+						}
+					}
+				}
+			}
+			
+			
+			
+			
+			
+			
+			/*
+			
 			if ($queryCharacterLength > 2)
 			{
 				$maximumLevenshteinDistance = self::getMaximumLevenshteinDistanceForCharacterLength($queryCharacterLength);
@@ -572,6 +614,7 @@ abstract class XXX_String_Search
 					}
 				}
 			}
+			*/
 		}
 		
 		if ($matchType !== false)

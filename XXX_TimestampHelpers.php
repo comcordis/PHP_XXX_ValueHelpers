@@ -1568,7 +1568,7 @@ abstract class XXX_TimestampHelpers
 	
 	
 	
-	public static function parseDateValue ($dateValue, $dateFormat)
+	public static function parseDateValue ($dateValue, $dateFormat = 'dateMonthYear')
 	{
 		$original = $dateValue;
 		

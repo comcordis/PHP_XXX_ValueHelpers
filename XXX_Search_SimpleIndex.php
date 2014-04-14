@@ -17,8 +17,8 @@ comparison:
 	- simplified characters (without accents lower case etc.) (Default)
 	
 term modes:
-	- full
-	- split
+	- full (the full value is considered 1 term)
+	- split (all parts are split by a separator)
 
 highlighting:
 	- <b> Identical from beginning
@@ -80,7 +80,7 @@ class XXX_Search_SimpleIndex
 	
 	public $labels = array();
 	
-	public $query = false;
+	public $queryValue = false;
 	public $queryValueInformation = false; 
 	
 	public function __construct ($termMode, $characterMatchingMode, $dataType)
@@ -121,19 +121,34 @@ class XXX_Search_SimpleIndex
 		return $index;
 	}
 	
-	public function addSources ($sources)
-	{
-		for ($i = 0, $iEnd = XXX_Array::getFirstLevelItemTotal($sources); $i < $iEnd; ++$i)
+		public function addSources ($sources)
 		{
-			$this->addSource($sources[$i]);
+			$result = false;
+			
+			for ($i = 0, $iEnd = XXX_Array::getFirstLevelItemTotal($sources); $i < $iEnd; ++$i)
+			{
+				$result = $this->addSource($sources[$i]);
+			}
+			
+			return $result;
 		}
-	}
-	
 	
 	public function executeQuery ($query)
 	{
-		$this->query = $query;
-		$this->queryValueInformation = XXX_String_Search::composeValueInformation($query, $this->termMode, $this->characterMatchingMode);
+		
+		$queryValue = '';
+	
+		if (XXX_Type::isArray($query))
+		{
+			$queryValue = $query['value'];
+		}
+		else
+		{
+			$queryValue = $query;
+		}
+		
+		$this->queryValue = $queryValue;
+		$this->queryValueInformation = XXX_String_Search::composeValueInformation($queryValue, $this->termMode, $this->characterMatchingMode);
 	
 		$this->sourceMatchers = array();
 		
@@ -183,7 +198,7 @@ class XXX_Search_SimpleIndex
 			
 			$suggestion = array
 			(
-				'valueAskingSuggestions' => $this->query,
+				'valueAskingSuggestions' => $this->queryValue,
 				'suggestedValue' => $sourceValue,
 				'complement' => '',
 				'label' => $label,
@@ -211,7 +226,7 @@ class XXX_Search_SimpleIndex
 		$result = array
 		(
 			'type' => 'processed',
-			'valueAskingSuggestions' => $this->query,
+			'valueAskingSuggestions' => $this->queryValue,
 			'suggestions' => $this->getSuggestions()
 		);
 		

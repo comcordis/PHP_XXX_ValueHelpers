@@ -151,7 +151,8 @@ abstract class XXX_Type
 	
 	public static function isNumeric ($value = null)
 	{
-		return self::isInteger($value) || self::isFloat($value) || (self::makeString(self::makeInteger($value)) == $value || self::makeString(self::makeFloat($value)) == $value);
+		return self::makeInteger($value) == $value || self::makeFloat($value) == $value;
+		//return self::isInteger($value) || self::isFloat($value) || (self::makeString(self::makeInteger($value)) == $value || self::makeString(self::makeFloat($value)) == $value);
 	}
 	
 	public static function isPositiveNumeric ($value = null)

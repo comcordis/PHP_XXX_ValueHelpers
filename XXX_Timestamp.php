@@ -12,7 +12,11 @@ class XXX_Timestamp
 	{
 		$this->timestamp = time();
 		
-		if (XXX_Type::isArray($tempParameter))
+		if (XXX_Type::isTimestamp($tempParameter))
+		{
+			$this->set($tempParameter->get());
+		}		
+		else if (XXX_Type::isArray($tempParameter))
 		{
 			$this->compose($tempParameter);
 		}

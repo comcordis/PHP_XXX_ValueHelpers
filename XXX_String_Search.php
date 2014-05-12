@@ -156,9 +156,15 @@ abstract class XXX_String_Search
 		
 		$result['sourceIndex'] = $sourceIndex;
 		$result['bestMatchType'] = false;
-		$result['identicalCharacterHitTotal'] = 0;
-		$result['similarCharacterHitTotal'] = 0;
+		
+		$result['fullIdenticalCharacterHitTotal'] = 0;
+		$result['partlyIdenticalCharacterHitTotal'] = 0;
+		$result['partlySimilarCharacterHitTotal'] = 0;
+		
 		$result['levenshteinDistanceTotal'] = 0;
+		
+		$result['fullTermHitTotal'] = 0;
+		$result['partialTermHitTotal'] = 0;
 		$result['termHitTotal'] = 0;
 		
 		$result['lowestMatchOffset'] = 10000;
@@ -243,7 +249,7 @@ abstract class XXX_String_Search
 		
 		return $result;
 	}
-	
+		// Those with a matcher go before those without
 		public static function getMatcherSortNumber ($matcher)
 		{
 			$result = 0;
@@ -256,6 +262,7 @@ abstract class XXX_String_Search
 			return $result;
 		}
 		
+		// Full matching goes before split
 		public static function getTermModeSortNumber ($termMode)
 		{
 			$result = 0;
@@ -277,21 +284,25 @@ abstract class XXX_String_Search
 			return $result;
 		}
 		
+		// Full term match, goes before partial term match, goes before partial similar match
 		public static function getMatchTypeSortNumber ($matchType)
 		{
 			$result = 0;
 			
 			switch ($matchType)
 			{
-				case 'identical':
+				case 'fullyIdentical':
 					$result = 1;
 					break;
-				case 'similar':
+				case 'partlyIdentical':
 					$result = 2;
+					break;
+				case 'partlySimilar':
+					$result = 3;
 					break;
 				case false:
 				default:
-					$result = 3;
+					$result = 4;
 					break;
 			}
 			
@@ -307,38 +318,43 @@ abstract class XXX_String_Search
 		if ($result == 0)
 		{
 			$result = self::getMatchTypeSortNumber($a['bestMatchType']) - self::getMatchTypeSortNumber($b['bestMatchType']);
-			/*
+			
 			if ($result == 0)
 			{
 				$result = self::getTermModeSortNumber($a['termMode']) - self::getTermModeSortNumber($b['termMode']);
-			*/
+			
 				if ($result == 0)
 				{
-					$result = $b['termHitTotal'] - $a['termHitTotal'];
+					$result = $b['fullTermHitTotal'] - $a['fullTermHitTotal'];
 					
 					if ($result == 0)
 					{
-						$result = ($b['identicalCharacterHitTotal'] + $b['similarCharacterHitTotal']) - ($a['identicalCharacterHitTotal'] + $a['identicalCharacterHitTotal']);
-												
+						$result = $b['partialTermHitTotal'] - $a['partialTermHitTotal'];
+					
 						if ($result == 0)
-						{						
-							$result = $b['identicalCharacterHitTotal'] - $a['identicalCharacterHitTotal'];
-													
+						{
+							$result = $b['fullyIdenticalCharacterHitTotal'] - $a['fullyIdenticalCharacterHitTotal'];
+					
 							if ($result == 0)
 							{
-								$result = $b['similarCharacterHitTotal'] - $a['similarCharacterHitTotal'];
-								
+								$result = $b['partlyIdenticalCharacterHitTotal'] - $a['partlyIdenticalCharacterHitTotal'];
+					
 								if ($result == 0)
 								{
-									$result = $a['levenshteinDistanceTotal'] - $b['levenshteinDistanceTotal'];
-									
+									$result = $b['partlySimilarCharacterHitTotal'] - $a['partlySimilarCharacterHitTotal'];
+					
 									if ($result == 0)
-									{
-										$result = $a['characterLength'] - $b['characterLength'];
+									{										
+										$result = $a['levenshteinDistanceTotal'] - $b['levenshteinDistanceTotal'];
 										
 										if ($result == 0)
 										{
-											$result = $a['lowestMatchOffset'] - $b['lowestMatchOffset'];
+											$result = $a['characterLength'] - $b['characterLength'];
+											
+											if ($result == 0)
+											{
+												$result = $a['lowestMatchOffset'] - $b['lowestMatchOffset'];
+											}
 										}
 									}
 								}
@@ -346,7 +362,7 @@ abstract class XXX_String_Search
 						}
 					}
 				}
-			//}
+			}
 		}
 		
 		return $result;
@@ -358,10 +374,14 @@ abstract class XXX_String_Search
 		
 		switch ($oldMatchType)
 		{
-			case 'identical':											
+			case 'partlyIdentical':
+				if ($newMatchType == 'fullyIdentical')
+				{
+					$result = true;
+				}										
 				break;
-			case 'similar':
-				if ($newMatchType == 'identical')
+			case 'partlySimilar':
+				if ($newMatchType == 'partlyIdentical' || $newMatchType == 'fullyIdentical')
 				{
 					$result = true;
 				}
@@ -457,156 +477,52 @@ abstract class XXX_String_Search
 		$matchCharacterLength = 0;
 		$matchLevenshteinDistance = 0;
 		
-		// Literal
-		$matchAtCharacterPosition = XXX_String::findFirstPosition($source, $query);
-		
-		if ($matchAtCharacterPosition !== false)
+		// fullyIdentical
+		if ($source == $query)
 		{
-			$matchType = 'identical';
-			$matchOffset = $matchAtCharacterPosition;
-			$matchCharacterLength = $queryCharacterLength;
+			$matchType = 'fullyIdentical';
+			$matchCharacterLength = $sourceCharacterLength;
 		}
-		// Similar
 		else
 		{
-			// Should be at least 3 characters
-			if ($queryCharacterLength > 2 && $sourceCharacterLength > 2)
+			// partlyIdentical
+			$matchAtCharacterPosition = XXX_String::findFirstPosition($source, $query);
+			
+			if ($matchAtCharacterPosition !== false)
 			{
-				// See the maximum potential for mistakes
-				$maximumLevenshteinDistance = self::getMaximumLevenshteinDistanceForCharacterLength($queryCharacterLength);
-				
-				if ($maximumLevenshteinDistance > 0)
-				{
-					$characterLengthDifference = 0;
-					
-					if ($queryCharacterLength > $sourceCharacterLength)
-					{
-						$characterLengthDifference = $queryCharacterLength - $sourceCharacterLength;
-					}
-					else if ($queryCharacterLength < $sourceCharacterLength)
-					{
-						$characterLengthDifference = $sourceCharacterLength - $queryCharacterLength;
-					}
-					
-					
-					
-					if ($characterLengthDifference <= $maximumLevenshteinDistance)
-					{
-						$levenshteinDistance = XXX_String_Levenshtein::getDistance($source, $query);
-						
-						if ($levenshteinDistance <= $maximumLevenshteinDistance)
-						{
-							$matchType = 'similar';
-							$matchCharacterLength = $queryCharacterLength;						
-							$matchLevenshteinDistance = $levenshteinDistance;
-						}
-					}
-				}
+				$matchType = 'partlyIdentical';
+				$matchOffset = $matchAtCharacterPosition;
+				$matchCharacterLength = $queryCharacterLength;
 			}
-			
-			
-			
-			
-			
-			
-			/*
-			
-			if ($queryCharacterLength > 2)
+			// partlySimilar
+			else
 			{
-				$maximumLevenshteinDistance = self::getMaximumLevenshteinDistanceForCharacterLength($queryCharacterLength);
-				
-				if ($maximumLevenshteinDistance > 0)
+				// Should be at least 3 characters
+				if ($queryCharacterLength > 2 && $sourceCharacterLength > 2)
 				{
-					if ($queryCharacterLength < $sourceCharacterLength)
+					// See the maximum potential for mistakes
+					$maximumLevenshteinDistance = self::getMaximumLevenshteinDistanceForCharacterLength($queryCharacterLength);
+					
+					if ($maximumLevenshteinDistance > 0)
 					{
-						$characterLengthDifference = $sourceCharacterLength - $queryCharacterLength;
-						
-						$maximumOffset = $characterLengthDifference;
-						
-						if (!$similarWithinWord)
-						{
-							$maximumOffset = 1;
-						}
-						
-						$temporarySimilarMatches = array();
-							
-						for ($i = 0, $iEnd = $maximumOffset; $i < $iEnd; ++$i)
-						{
-							$sourcePart = XXX_String::getPart($source, $i, $queryCharacterLength);
-							
-							$levenshteinDistance = XXX_String_Levenshtein::getDistance($query, $sourcePart);
-							
-							if ($levenshteinDistance <= $maximumLevenshteinDistance)
-							{
-								$expandingOffset = $i;
-								$expandingLevenshteinDistance = $levenshteinDistance;
-								$expandingCharacterLength = $queryCharacterLength;
-								
-								$extraExpandingCharacterLength = $characterLengthDifference - $i;
-								
-								if ($extraExpandingCharacterLength > 0)
-								{
-									for ($j = $queryCharacterLength + 1, $jEnd = $queryCharacterLength + $extraExpandingCharacterLength; $j <= $jEnd; ++$j)
-									{
-										$sourcePartSub = XXX_String::getPart($source, $i, $j);
-										
-										$levenshteinDistanceSub = XXX_String_Levenshtein::getDistance($query, $sourcePartSub);
-										
-										if ($levenshteinDistanceSub <= $expandingLevenshteinDistance)
-										{
-											$expandingLevenshteinDistance = $levenshteinDistanceSub;
-											$expandingCharacterLength = $j;
-										}
-										else
-										{
-											break;
-										}
-									}
-									
-									$temporarySimilarMatches[] = array($expandingOffset, $expandingLevenshteinDistance, $expandingCharacterLength);
-								}
-								else
-								{
-									$temporarySimilarMatches[] = array($i, $levenshteinDistance, $queryCharacterLength);
-								}
-							}
-						}
-						
-						if (XXX_Array::getFirstLevelItemTotal($temporarySimilarMatches))
-						{
-							usort($temporarySimilarMatches, 'XXX_String_Search::compareTemporarySimilarMatches');
-							
-							$tempOffset = $temporarySimilarMatches[0][0];
-							$tempDistance = $temporarySimilarMatches[0][1];
-							$tempCharacterLength = $temporarySimilarMatches[0][2];
-							
-							$matchType = 'similar';
-							$matchOffset = $tempOffset;
-							$matchCharacterLength = $tempCharacterLength;
-							$matchLevenshteinDistance = $tempDistance;
-						}
-					}
-					else
-					{
-						$sourceIsLongEnough = true;
+						$characterLengthDifference = 0;
 						
 						if ($queryCharacterLength > $sourceCharacterLength)
 						{
-							$minimumCharacterLength = XXX_Number::highest($queryCharacterLength - $maximumLevenshteinDistance, 0);
-							
-							if ($sourceCharacterLength < $minimumCharacterLength)
-							{
-								$sourceIsLongEnough = false;
-							}
+							$characterLengthDifference = $queryCharacterLength - $sourceCharacterLength;
+						}
+						else if ($queryCharacterLength < $sourceCharacterLength)
+						{
+							$characterLengthDifference = $sourceCharacterLength - $queryCharacterLength;
 						}
 						
-						if ($sourceIsLongEnough)
+						if ($characterLengthDifference <= $maximumLevenshteinDistance)
 						{
 							$levenshteinDistance = XXX_String_Levenshtein::getDistance($source, $query);
 							
 							if ($levenshteinDistance <= $maximumLevenshteinDistance)
 							{
-								$matchType = 'similar';
+								$matchType = 'partlySimilar';
 								$matchCharacterLength = $queryCharacterLength;						
 								$matchLevenshteinDistance = $levenshteinDistance;
 							}
@@ -614,7 +530,6 @@ abstract class XXX_String_Search
 					}
 				}
 			}
-			*/
 		}
 		
 		if ($matchType !== false)
@@ -676,12 +591,21 @@ abstract class XXX_String_Search
 					
 					switch ($matchInformation['matchType'])
 					{
-						case 'identical':
-							$matcher['identicalCharacterHitTotal'] = $matchInformation['matchCharacterLength'];
+						case 'fullyIdentical':
+							$matcher['fullyIdenticalCharacterHitTotal'] = $matchInformation['matchCharacterLength'];
+							
+							$matcher['fullTermHitTotal'] = 1;
 							break;
-						case 'similar':
-							$matcher['similarCharacterHitTotal'] = $matchInformation['matchCharacterLength'];
+						case 'partlyIdentical':
+							$matcher['partlyIdenticalCharacterHitTotal'] = $matchInformation['matchCharacterLength'];
+							
+							$matcher['partialTermHitTotal'] = 1;
+							break;
+						case 'partlySimilar':
+							$matcher['partlySimilarCharacterHitTotal'] = $matchInformation['matchCharacterLength'];
 							$matcher['levenshteinDistanceTotal'] = $matchInformation['matchLevenshteinDistance'];
+							
+							$matcher['partialTermHitTotal'] = 1;
 							break;
 					}
 					
@@ -697,7 +621,6 @@ abstract class XXX_String_Search
 				 
 				break;
 			case 'split':
-				
 				$hasMatch = false;
 				
 				$previousPartsOffset = 0;
@@ -758,13 +681,22 @@ abstract class XXX_String_Search
 										}
 										
 										switch ($matchInformation['matchType'])
-										{
-											case 'identical':
-												$matcher['identicalCharacterHitTotal'] += $matchInformation['matchCharacterLength'];
+										{								
+											case 'fullyIdentical':
+												$matcher['fullyIdenticalCharacterHitTotal'] += $matchInformation['matchCharacterLength'];
+												
+												$matcher['fullTermHitTotal'] += 1;
+												break;							
+											case 'partlyIdentical':
+												$matcher['partlyIdenticalCharacterHitTotal'] += $matchInformation['matchCharacterLength'];
+												
+												$matcher['partialTermHitTotal'] += 1;
 												break;
-											case 'similar':
-												$matcher['similarCharacterHitTotal'] += $matchInformation['matchCharacterLength'];
+											case 'partlySimilar':
+												$matcher['partlySimilarCharacterHitTotal'] += $matchInformation['matchCharacterLength'];
 												$matcher['levenshteinDistanceTotal'] += $matchInformation['matchLevenshteinDistance'];
+												
+												$matcher['partialTermHitTotal'] += 1;
 												break;
 										}
 										
@@ -841,20 +773,22 @@ abstract class XXX_String_Search
 					{
 						switch ($previousCharacterHit)
 						{
-							case 'identical':
+							case 'fullyIdentical':
+							case 'partlyIdentical':
 								$result .= '</b>';
 								break;
-							case 'similar':
+							case 'partlySimilar':
 								$result .= '</u>';
 								break;
 						}
 						
 						switch ($characterHit)
 						{
-							case 'identical':
+							case 'fullyIdentical':
+							case 'partlyIdentical':
 								$result .= '<b>';
 								break;
-							case 'similar':
+							case 'partlySimilar':
 								$result .= '<u>';
 								break;
 						}
@@ -877,10 +811,11 @@ abstract class XXX_String_Search
 						case 'separator':						
 							switch ($previousCharacterHit)
 							{
-								case 'identical':
+								case 'fullyIdentical':
+								case 'partlyIdentical':
 									$result .= '</b>';
 									break;
-								case 'similar':
+								case 'partlySimilar':
 									$result .= '</u>';
 									break;
 							}
@@ -911,20 +846,22 @@ abstract class XXX_String_Search
 								{
 									switch ($previousCharacterHit)
 									{
-										case 'identical':
+										case 'fullyIdentical':
+										case 'partlyIdentical':
 											$result .= '</b>';
 											break;
-										case 'similar':
+										case 'partlySimilar':
 											$result .= '</u>';
 											break;
 									}
 									
 									switch ($characterHit)
 									{
-										case 'identical':
+										case 'fullyIdentical':
+										case 'partlyIdentical':
 											$result .= '<b>';
 											break;
-										case 'similar':
+										case 'partlySimilar':
 											$result .= '<u>';
 											break;
 									}
@@ -942,10 +879,11 @@ abstract class XXX_String_Search
 		
 		switch ($previousCharacterHit)
 		{
-			case 'identical':
+			case 'fullyIdentical':
+			case 'partlyIdentical':
 				$result .= '</b>';
 				break;
-			case 'similar':
+			case 'partlySimilar':
 				$result .= '</u>';
 				break;
 		}

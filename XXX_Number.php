@@ -126,17 +126,32 @@ abstract class XXX_Number
 		
 	public static function floor ($value)
 	{
-		return floor($value);	
+		$value = floor($value);	
+		
+		$value = intval($value, 10);
+		
+		return $value;
 	}
 	
 	public static function ceil ($value)
 	{
-		return ceil($value);	
+		$value = ceil($value);
+		
+		$value = intval($value, 10);
+		
+		return $value;
 	}
 	
 	public static function round ($value, $decimals = 0)
 	{
-		return round($value, $decimals);	
+		$value = round($value, $decimals);
+		
+		if ($decimals == 0)
+		{
+			$value = intval($value, 10);
+		}
+		
+		return $value;
 	}
 					
 	////////////////////

@@ -37,6 +37,47 @@ precedence:
 		- Identical anywhere within
 		- Similar from beginning
 		- Similar anywhere within
+		
+		
+	
+	- matcherSortNumber
+		- full array (hasMatcher) 
+		- none
+	- matchTypeSortNumber
+		- identical
+		- similar
+	- termModeSortNumber
+		- full
+		- split
+	- termHitTotal
+	- identicalCharacterHitTotal + similarCharacterHitTotal
+	- identicalCharacterHitTotal
+	- similarCharacterHitTotal
+	- levenshteinDistanceTotal
+	- characterLength
+	- lowestMatchOffset
+	
+	
+	TODO pass matcherSortingInformation to client...
+	
+Largo guid
+
+Largo guido martina
+
+Largo guido marti
+
+Largo guido martin
+
+hazendan
+
+hazendans
+
+burgemeester le vevre
+
+burgemeester van
+	
+	
+	
 
 problems:
 	- matching (character switches) and result presentation difference
@@ -163,10 +204,12 @@ class XXX_Search_SimpleIndex
 			
 			if ($sourceMatcher)
 			{
+				//XXX_Type::peakAtVariable($sourceValueInformation);
+				//XXX_Type::peakAtVariable($sourceMatcher);
+				
 				$this->sourceMatchers[] = $sourceMatcher;
 			}
 		}
-		
 		
 		usort($this->sourceMatchers, 'XXX_Search_SimpleIndex::compareSourceMatchers');
 		
@@ -214,6 +257,19 @@ class XXX_Search_SimpleIndex
 			{
 				$suggestion['data']['dataType'] = $this->dataType;
 			}
+			
+			$suggestion['data']['sourceMatcher'] = array
+			(
+				'bestMatchType' => $sourceMatcher['bestMatchType'],
+				'fullIdenticalCharacterHitTotal' => $sourceMatcher['fullIdenticalCharacterHitTotal'],
+				'partlyIdenticalCharacterHitTotal' => $sourceMatcher['partlyIdenticalCharacterHitTotal'],
+				'partlySimilarCharacterHitTotal' => $sourceMatcher['partlySimilarCharacterHitTotal'],
+				'levenshteinDistanceTotal' => $sourceMatcher['levenshteinDistanceTotal'],
+				'fullTermHitTotal' => $sourceMatcher['fullTermHitTotal'],
+				'partialTermHitTotal' => $sourceMatcher['partialTermHitTotal'],
+				'termHitTotal' => $sourceMatcher['termHitTotal'],
+				'lowestMatchOffset' => $sourceMatcher['lowestMatchOffset']
+			);
 			
 			$suggestions[] = $suggestion;
 		}

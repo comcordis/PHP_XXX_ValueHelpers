@@ -569,9 +569,24 @@ abstract class XXX_Type
 			{
 				echo ' // (' . get_class($value) . ') Object / Class / Instance';
 				
-				// get_class_vars
-				// get_object_vars($value)
 			}
+			
+			echo $renderedLineSeparator;
+			echo $renderedSpacing;
+			echo '{';
+			echo $renderedLineSeparator;
+			
+			foreach (get_object_vars($value) as $subKey => $subValue)
+			{
+				self::peakAtVariableSub($subValue, $spacing + 1, '$' . $subKey, ' = ', ';');
+			}
+			
+			// get_class_vars
+			// get_object_vars($value)
+			
+			echo $renderedSpacing;
+			echo '}';
+			echo $lineEnding;
 			echo $renderedLineSeparator;
 		}
 		else if (XXX_Type::isResource($value))

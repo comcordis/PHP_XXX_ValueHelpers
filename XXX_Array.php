@@ -129,25 +129,38 @@ abstract class XXX_Array
 	
 	public static function merge ($array1, $array2, $strict = true)
 	{
-		foreach ($array2 as $key => $value)
-		{
-			// Key doesn't exist, so add it
-			if (!self::hasKey($array1, $key, false, $strict))
+		if (XXX_Type::isAssociativeArray($array1) && XXX_Type::isAssociativeArray($array2))
+		{		
+			foreach ($array2 as $key => $value)
 			{
-				$array1[$key] = $value;
-			}
-			// Key exists
-			else
-			{
-				// If it is also an array, use recursion
-				if (XXX_Type::isArray($value))
-				{
-					$array1[$key] = self::merge($array1[$key], $value);
-				}
-				// It's a non-array value, override it
-				else
+				// Key doesn't exist, so add it
+				if (!self::hasKey($array1, $key, false, $strict))
 				{
 					$array1[$key] = $value;
+				}
+				// Key exists
+				else
+				{
+					// If it is also an array, use recursion
+					if (XXX_Type::isArray($value))
+					{
+						$array1[$key] = self::merge($array1[$key], $value, $strict);
+					}
+					// It's a non-array value, override it
+					else
+					{
+						$array1[$key] = $value;
+					}
+				}
+			}
+		}
+		else
+		{
+			foreach ($array2 as $value)
+			{
+				if (!self::hasValue($array1, $value))
+				{
+					$array1[] = $value;
 				}
 			}
 		}

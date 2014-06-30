@@ -1593,6 +1593,11 @@ abstract class XXX_TimestampHelpers
 			
 			$parts = XXX_String_Pattern::splitToArray($dateValue, '[/\\-., :\'"]+', '');
 			
+			if (XXX_Array::getFirstLevelItemTotal($parts) == 4)
+			{
+				array_shift($parts);
+			}
+			
 				//XXX_PHP::errorNotification(0, 'Parsed date parts ' . XXX_String_JSON::encode($parts));
 				
 			$filteredParts = array();

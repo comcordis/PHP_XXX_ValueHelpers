@@ -7,7 +7,7 @@ abstract class XXX_String_HTMLEntities
 	{
 		return htmlentities($string, ENT_QUOTES, 'UTF-8');
 		
-		// htmlspecialchars($string, ENT_QUOTES, 'UTF-8'); 
+		// htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
 	}
 	
 	public static function decode ($string = '')

@@ -157,7 +157,7 @@ abstract class XXX_String_Search
 		$result['sourceIndex'] = $sourceIndex;
 		$result['bestMatchType'] = false;
 		
-		$result['fullIdenticalCharacterHitTotal'] = 0;
+		$result['fullyIdenticalCharacterHitTotal'] = 0;
 		$result['partlyIdenticalCharacterHitTotal'] = 0;
 		$result['partlySimilarCharacterHitTotal'] = 0;
 		

@@ -261,7 +261,7 @@ class XXX_Search_SimpleIndex
 			$suggestion['data']['sourceMatcher'] = array
 			(
 				'bestMatchType' => $sourceMatcher['bestMatchType'],
-				'fullIdenticalCharacterHitTotal' => $sourceMatcher['fullIdenticalCharacterHitTotal'],
+				'fullyIdenticalCharacterHitTotal' => $sourceMatcher['fullyIdenticalCharacterHitTotal'],
 				'partlyIdenticalCharacterHitTotal' => $sourceMatcher['partlyIdenticalCharacterHitTotal'],
 				'partlySimilarCharacterHitTotal' => $sourceMatcher['partlySimilarCharacterHitTotal'],
 				'levenshteinDistanceTotal' => $sourceMatcher['levenshteinDistanceTotal'],

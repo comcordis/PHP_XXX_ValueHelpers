@@ -115,11 +115,11 @@ abstract class XXX_String_CSV
 		
 		if ($a[1] < $b[1])
 		{
-			$result = 1;
+			$result = -1;
 		}
 		else if ($a[1] > $b[1])
 		{
-			$result = -1;
+			$result = 1;
 		}
 		
 		return $result;
@@ -131,11 +131,11 @@ abstract class XXX_String_CSV
 		
 		if ($a[1] < $b[1])
 		{
-			$result = -1;
+			$result = 1;
 		}
 		else if ($a[1] > $b[1])
 		{
-			$result = 1;
+			$result = -1;
 		}
 		
 		return $result;
@@ -175,7 +175,7 @@ abstract class XXX_String_CSV
 		
 		for ($i = 0, $iEnd = XXX_Array::getFirstLevelItemTotal($columnSortingArray); $i < $iEnd; ++$i)
 		{
-			$sortedCSVArray[] = $csvArray[$columnSortingArray[0]];
+			$sortedCSVArray[] = $csvArray[$columnSortingArray[$i][0]];
 		}
 		
 		return $sortedCSVArray;

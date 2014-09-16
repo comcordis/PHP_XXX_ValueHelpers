@@ -109,6 +109,78 @@ abstract class XXX_String_CSV
 		return $parsedLines;
 	}
 	
+	public static function sortColumnAscending ($a, $b)
+	{
+		$result = 0;
+		
+		if ($a[1] < $b[1])
+		{
+			$result = 1;
+		}
+		else if ($a[1] > $b[1])
+		{
+			$result = -1;
+		}
+		
+		return $result;
+	}
+	
+	public static function sortColumnDescending ($a, $b)
+	{
+		$result = 0;
+		
+		if ($a[1] < $b[1])
+		{
+			$result = -1;
+		}
+		else if ($a[1] > $b[1])
+		{
+			$result = 1;
+		}
+		
+		return $result;
+	}
+	
+	public static function sortByColumn ($csvArray = array(), $sortColumn = 0, $order = 'ascending', $avoidFirstRow = true)
+	{
+		$i = 0;
+		
+		if ($avoidFirstRow)
+		{
+			$i = 1;
+		}
+		
+		$columnSortingArray = array();
+		
+		for ($iEnd = XXX_Array::getFirstLevelItemTotal($csvArray); $i < $iEnd; ++$i)
+		{
+			$columnSortingArray[] = array($i, $csvArray[$i][$sortColumn]);
+		}
+		
+		if ($order == 'ascending')
+		{
+			usort($columnSortingArray, 'XXX_String_CSV::sortColumnAscending');
+		}
+		else
+		{
+			usort($columnSortingArray, 'XXX_String_CSV::sortColumnDescending');
+		}
+		
+		$sortedCSVArray = array();
+		
+		if ($avoidFirstRow)
+		{
+			$sortedCSVArray[] = $csvArray[0];
+		}
+		
+		for ($i = 0, $iEnd = XXX_Array::getFirstLevelItemTotal($columnSortingArray); $i < $iEnd; ++$i)
+		{
+			$sortedCSVArray[] = $csvArray[$columnSortingArray[0]];
+		}
+		
+		return $sortedCSVArray;
+	}
+	
 	public static function parseLines ($lines, $separator = ',')
 	{
 		$parsedLines = array();

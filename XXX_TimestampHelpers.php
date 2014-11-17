@@ -278,6 +278,190 @@ abstract class XXX_TimestampHelpers
 		return $result;
 	}
 	
+	
+	public static function offsetTimestampByDateDays ($timestamp = false, $offset = 0)
+	{
+		$timestamp = new XXX_Timestamp($timestamp);
+		
+		$direction = 'future';
+		
+		if ($offset < 0)
+		{
+			$offset *= -1;
+			
+			$direction = 'past';
+		}
+		
+		while (true)
+		{
+			if ($offset == 0)
+			{
+				break;
+			}
+			else
+			{			
+				$timestampParts = $timestamp->parse();
+				
+				$timestampYear = $timestampParts['year'];
+				$timestampMonth = $timestampParts['month'];
+				$timestampDate = $timestampParts['date'];
+				$timestampDayTotalInMonth = XXX_TimestampHelpers::getDayTotalInMonth($timestampYear, $timestampMonth);
+				
+				switch ($direction)
+				{
+					case 'past':
+						if ($timestampDate == 1)
+						{
+							if ($timestampMonth == 1)
+							{
+								$newTimestampYear = $timestampYear - 1;
+								$newTimestampMonth = 12;
+								
+								$newTimestampDate = XXX_TimestampHelpers::getDayTotalInMonth($newTimestampYear, $newTimestampMonth);
+								
+								--$offset;
+							}
+							else
+							{
+								$newTimestampYear = $timestampYear;
+								$newTimestampMonth = $timestampMonth - 1;
+								
+								$newTimestampDate = XXX_TimestampHelpers::getDayTotalInMonth($newTimestampYear, $newTimestampMonth);
+								
+								--$offset;
+							}
+						}
+						else
+						{
+							$newTimestampYear = $timestampYear;
+							$newTimestampMonth = $timestampMonth;
+							$newTimestampDate = $timestampDate - 1;
+							
+							--$offset;
+						}
+						break;
+					case 'future':
+						if ($timestampDate == $timestampDayTotalInMonth)
+						{
+							if ($timestampMonth == 12)
+							{
+								$newTimestampYear = $timestampYear + 1;
+								$newTimestampMonth = 1;
+								
+								$newTimestampDate = XXX_TimestampHelpers::getDayTotalInMonth($newTimestampYear, $newTimestampMonth);
+								
+								--$offset;
+							}
+							else
+							{
+								$newTimestampYear = $timestampYear;
+								$newTimestampMonth = $timestampMonth + 1;
+								
+								$newTimestampDate = XXX_TimestampHelpers::getDayTotalInMonth($newTimestampYear, $newTimestampMonth);
+								
+								--$offset;
+							}
+						}
+						else
+						{
+							$newTimestampYear = $timestampYear;
+							$newTimestampMonth = $timestampMonth;
+							$newTimestampDate = $timestampDate + 1;
+							
+							--$offset;
+						}
+						break;
+				}
+				
+				$timestamp = new XXX_Timestamp(array('year' => $newTimestampYear, 'month' => $newTimestampMonth, 'date' => $newTimestampDate, 'hour' => 0, 'minute' => 0, 'second' => 0));
+			}
+		}
+		
+		return $timestamp;
+	}
+	
+	
+	public function getReportingInformation ($timestamp = false)
+	{
+		$result = array();
+			
+			$nowTimestamp = new XXX_Timestamp($timestamp);
+			$nowTimestampParts = $nowTimestamp->parse(true);
+			
+				$currentYear = $nowTimestampParts['year'];
+				$currentMonth = $nowTimestampParts['month'];
+				$currentDate = $nowTimestampParts['date'];
+				$currentDayOfTheWeek = $nowTimestampParts['dayOfTheWeek'];
+		
+		$result['currentYear'] = $currentYear;
+		$result['currentMonth'] = $currentMonth;
+		$result['currentDate'] = $currentDate;
+		$result['currentDayOfTheWeek'] = $currentDayOfTheWeek;
+		
+			$currentDayOfTheWeekStart = new XXX_Timestamp(array('year' => $currentYear, 'month' => $currentMonth, 'date' => $currentDate, 'hour' => 0, 'minute' => 0, 'second' => 0));
+			$nextDayOfTheWeekStart = XXX_TimestampHelpers::offsetTimestampByDateDays($currentDayOfTheWeekStart, 1);
+			
+		$result['currentDayOfTheWeekStartTimestamp'] = $currentDayOfTheWeekStart->get();
+		$result['currentDayOfTheWeekEndTimestamp'] = $nextDayOfTheWeekStart->get();
+		
+			$sameDayOfTheWeekPreviousWeekStart = new XXX_Timestamp(array('year' => $currentYear, 'month' => $currentMonth, 'date' => $currentDate, 'hour' => 0, 'minute' => 0, 'second' => 0));
+			$sameDayOfTheWeekPreviousWeekStart = XXX_TimestampHelpers::offsetTimestampByDateDays($sameDayOfTheWeekPreviousWeekStart, -7);
+			
+			$sameDayOfTheWeekPreviousWeekNextDayOfTheWeekStart = new XXX_Timestamp(array('year' => $currentYear, 'month' => $currentMonth, 'date' => $currentDate, 'hour' => 0, 'minute' => 0, 'second' => 0));
+			$sameDayOfTheWeekPreviousWeekNextDayOfTheWeekStart = XXX_TimestampHelpers::offsetTimestampByDateDays($sameDayOfTheWeekPreviousWeekNextDayOfTheWeekStart, -6);
+			
+		$result['sameDayOfTheWeekPreviousWeekStartTimestamp'] = $sameDayOfTheWeekPreviousWeekStart->get();
+		$result['sameDayOfTheWeekPreviousWeekEndTimestamp'] = $sameDayOfTheWeekPreviousWeekNextDayOfTheWeekStart->get();
+				
+			$currentWeekStart = new XXX_Timestamp(array('year' => $currentYear, 'month' => $currentMonth, 'date' => $currentDate, 'hour' => 0, 'minute' => 0, 'second' => 0));
+			if ($currentDayOfTheWeek > 1)
+			{
+				$currentWeekStart = XXX_TimestampHelpers::offsetTimestampByDateDays($currentWeekStart, ($currentDayOfTheWeek - 1) * -1);
+			}
+			
+			$previousWeekStart = new XXX_Timestamp($currentWeekStart->parse());
+			$previousWeekStart = XXX_TimestampHelpers::offsetTimestampByDateDays($previousWeekStart, -7);
+			
+			$nextWeekStart = new XXX_Timestamp($currentWeekStart->parse());
+			$nextWeekStart = XXX_TimestampHelpers::offsetTimestampByDateDays($nextWeekStart, 7);
+			
+		$result['currentWeekStartTimestamp'] = $currentWeekStart->get();
+		$result['currentWeekEndTimestamp'] = $nextWeekStart->get();
+		
+		$result['previousWeekStartTimestamp'] = $previousWeekStart->get();
+		$result['previousWeekEndTimestamp'] = $currentWeekStart->get();
+			
+			$currentMonthStart = new XXX_Timestamp(array('year' => $currentYear, 'month' => $currentMonth, 'date' => 1, 'hour' => 0, 'minute' => 0, 'second' => 0));
+			
+			$currentMonthYearAndMonthNextMonth = XXX_TimestampHelpers::getYearAndMonthByMonthOffset($currentYear, $currentMonth, 1);
+			
+			$nextMonthStart = new XXX_Timestamp(array('year' => $currentMonthYearAndMonthNextMonth['year'], 'month' => $currentMonthYearAndMonthNextMonth['month'], 'date' => 1, 'hour' => 0, 'minute' => 0, 'second' => 0));
+			
+			$sameMonthPreviousYearStart = new XXX_Timestamp(array('year' => $currentYear - 1, 'month' => $currentMonth, 'date' => 1, 'hour' => 0, 'minute' => 0, 'second' => 0));
+			
+			$sameMonthPreviousYearYearAndMonthNextMonth = XXX_TimestampHelpers::getYearAndMonthByMonthOffset($currentYear - 1, $currentMonth, 1);
+			
+			$sameMonthPreviousYearNextMonthStart = new XXX_Timestamp(array('year' => $sameMonthPreviousYearYearAndMonthNextMonth['year'], 'month' => $sameMonthPreviousYearYearAndMonthNextMonth['month'], 'date' => 1, 'hour' => 0, 'minute' => 0, 'second' => 0));
+			
+		$result['currentMonthStartTimestamp'] = $currentMonthStart->get();
+		$result['currentMonthEndTimestamp'] = $nextMonthStart->get();
+		
+		$result['sameMonthPreviousYearStartTimestamp'] = $sameMonthPreviousYearStart->get();
+		$result['sameMonthPreviousYearEndTimestamp'] = $sameMonthPreviousYearNextMonthStart->get();
+		
+			$currentYearStart = new XXX_Timestamp(array('year' => $currentYear, 'month' => 1, 'date' => 1, 'hour' => 0, 'minute' => 0, 'second' => 0));
+			$nextYearStart = new XXX_Timestamp(array('year' => $currentYear + 1, 'month' => 1, 'date' => 1, 'hour' => 0, 'minute' => 0, 'second' => 0));
+			$previousYearStart = new XXX_Timestamp(array('year' => $currentYear - 1, 'month' => 1, 'date' => 1, 'hour' => 0, 'minute' => 0, 'second' => 0));
+			
+		$result['currentYearStartTimestamp'] = $currentYearStart->get();
+		$result['currentYearEndTimestamp'] = $nextYearStart->get();
+		
+		$result['previousYearStartTimestamp'] = $previousYearStart->get();
+		$result['previousYearEndTimestamp'] = $currentYearStart->get();
+		
+		return $result;
+	}
+	
 	/*
 	
 	http://en.wikipedia.org/wiki/Leap_year

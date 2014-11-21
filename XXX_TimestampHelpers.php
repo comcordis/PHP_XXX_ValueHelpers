@@ -569,7 +569,7 @@ abstract class XXX_TimestampHelpers
 		$result['offsetMonthEndTimestamp'] = $nextMonthStart->get();
 		
 		$result['previousMonthStartTimestamp'] = $previousMonthStart->get();
-		$result['previousMonthWithinEndTimestamp'] = $result['offsetMonthStartTimestamp'] + $result['timeWithinMonth'];
+		$result['previousMonthWithinEndTimestamp'] = $result['previousMonthStartTimestamp'] + $result['timeWithinMonth'];
 		$result['previousMonthEndTimestamp'] = $offsetMonthStart->get();
 		
 		$result['sameMonthPreviousYearStartTimestamp'] = $sameMonthPreviousYearStart->get();

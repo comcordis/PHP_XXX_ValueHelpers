@@ -32,7 +32,7 @@ abstract class XXX_String_CSV
 {
 	const CLASS_NAME = 'XXX_String_CSV';
 	
-	public static function compose ($array, $glue = ',', $useCommaForNumbers = false)
+	public static function compose ($array, $glue = ',', $useCommaForNumbers = false, $emptyValue = 'X')
 	{
 		$result = false;
 		
@@ -55,7 +55,7 @@ abstract class XXX_String_CSV
 						$result .= $glue;
 					}
 					
-					$result .= self::formatValue($value, $useCommaForNumbers);
+					$result .= self::formatValue($value, $useCommaForNumbers, $emptyValue);
 				}
 				
 				$result .= XXX_String::$lineSeparator;
@@ -69,11 +69,15 @@ abstract class XXX_String_CSV
 		return $result;
 	}
 	
-	public static function formatValue ($value = '', $useCommaForNumbers = false)
+	public static function formatValue ($value = '', $useCommaForNumbers = false, $emptyValue = 'X')
 	{
 		$result = '';
 		
-		if (XXX_Type::isString($value) && XXX_String::findFirstPosition($value, ' ') !== false)
+		if (XXX_Type::isEmpty($value))
+		{
+			$result = $emptyValue;
+		}
+		else if (XXX_Type::isString($value) && XXX_String::findFirstPosition($value, ' ') !== false)
 		{
 			$result .= '"' . XXX_String::addSlashes($value) . '"';
 		}

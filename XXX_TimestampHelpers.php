@@ -390,8 +390,8 @@ abstract class XXX_TimestampHelpers
 			$offsetYear = $offsetTimestampParts['year'];
 			$offsetMonth = $offsetTimestampParts['month'];
 			$offsetDate = $offsetTimestampParts['date'];
-			$offsetDayOfTheWeek = $offsetTimestampParts['offsetDayOfTheWeek'];
-			$offsetWeekOfTheYear = $offsetTimestampParts['offsetWeekOfTheYear'];
+			$offsetDayOfTheWeek = $offsetTimestampParts['dayOfTheWeek'];
+			$offsetWeekOfTheYear = $offsetTimestampParts['weekOfTheYear'];
 		
 		$iterator = new XXX_Timestamp(array('year' => $offsetYear, 'month' => $offsetMonth, 'date' => $offsetDate, 'hour' => 0, 'minute' => 0, 'second' => 0));
 		
@@ -409,7 +409,7 @@ abstract class XXX_TimestampHelpers
 			$iteratorParts = $iterator->parse(true);
 			
 			$isOffsetWeekOfTheYear = false;
-				
+			
 			if ($iteratorParts['weekOfTheYear'] == $offsetWeekOfTheYear)
 			{
 				$isOffsetWeekOfTheYear = true;

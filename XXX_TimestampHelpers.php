@@ -273,7 +273,7 @@ abstract class XXX_TimestampHelpers
 		
 		$dayTotalInMonth = date('t', $timestamp);
 		
-		$result = $dayTotalInMonth;
+		$result = XXX_Type::makeInteger($dayTotalInMonth);
 		
 		return $result;
 	}
@@ -403,7 +403,7 @@ abstract class XXX_TimestampHelpers
 		}
 		
 		$iterator = self::offsetTimestampByDateDays($iterator, -($pastWeeks * 7));
-				
+		
 		for ($i = 0, $iEnd = $pastWeeks + $futureWeeks; $i < $iEnd; ++$i)
 		{
 			$iteratorParts = $iterator->parse(true);

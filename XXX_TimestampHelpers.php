@@ -408,6 +408,13 @@ abstract class XXX_TimestampHelpers
 		{
 			$iteratorParts = $iterator->parse(true);
 			
+			$isOffsetWeekOfTheYear = false;
+				
+			if ($i == $offsetWeekOfTheYear)
+			{
+				$isOffsetWeekOfTheYear = true;
+			}			
+			
 			$nextIterator = new XXX_Timestamp($iterator);
 				
 			$nextIterator = self::offsetTimestampByDateDays($nextIterator, 7);
@@ -419,7 +426,8 @@ abstract class XXX_TimestampHelpers
 				'date' => $iteratorParts['date'],
 				'weekOfTheYear' => $iteratorParts['weekOfTheYear'],
 				'weekStartTimestamp' => $iterator->get(),
-				'weekEndTimestamp' => $nextIterator->get()
+				'weekEndTimestamp' => $nextIterator->get(),
+				'isOffsetWeekOfTheYear' => $isOffsetWeekOfTheYear
 			);
 			
 			$iterator = $nextIterator;
@@ -478,7 +486,8 @@ abstract class XXX_TimestampHelpers
 					'date' => $iteratorParts['date'],
 					'weekOfTheYear' => $iteratorParts['weekOfTheYear'],
 					'weekStartTimestamp' => $iterator->get(),
-					'weekEndTimestamp' => $nextIterator->get()
+					'weekEndTimestamp' => $nextIterator->get(),
+					'isOffsetWeekOfTheYear' => $isOffsetWeekOfTheYear
 				);
 				
 				$iterator = $nextIterator;

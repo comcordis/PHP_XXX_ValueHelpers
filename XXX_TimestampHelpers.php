@@ -410,7 +410,7 @@ abstract class XXX_TimestampHelpers
 			
 			$isOffsetWeekOfTheYear = false;
 				
-			if ($i == $offsetWeekOfTheYear)
+			if ($iteratorParts['weekOfTheYear'] == $offsetWeekOfTheYear)
 			{
 				$isOffsetWeekOfTheYear = true;
 			}			

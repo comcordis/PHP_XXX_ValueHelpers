@@ -87,7 +87,7 @@ abstract class XXX_String_CSV
 		}
 		else
 		{
-			if ($useCommaForNumbers)
+			if (XXX_Type::isNumber($value) && $useCommaForNumbers)
 			{
 				$result .= XXX_String::replace($value, '.', ',');
 			}

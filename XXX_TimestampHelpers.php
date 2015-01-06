@@ -273,7 +273,7 @@ abstract class XXX_TimestampHelpers
 		
 		$dayTotalInMonth = date('t', $timestamp);
 		
-		$result = $dayTotalInMonth;
+		$result = XXX_Type::makeInteger($dayTotalInMonth);
 		
 		return $result;
 	}
@@ -380,6 +380,62 @@ abstract class XXX_TimestampHelpers
 		return $timestamp;
 	}
 	
+	public function getSurroundingWeeksReportingInformation ($offsetTimestamp = false, $pastWeeks = 8, $futureWeeks = 4)
+	{
+		$result = array();
+		
+		$offsetTimestamp = new XXX_Timestamp($offsetTimestamp);
+		$offsetTimestampParts = $offsetTimestamp->parse(true);
+			
+			$offsetYear = $offsetTimestampParts['year'];
+			$offsetMonth = $offsetTimestampParts['month'];
+			$offsetDate = $offsetTimestampParts['date'];
+			$offsetDayOfTheWeek = $offsetTimestampParts['dayOfTheWeek'];
+			$offsetWeekOfTheYear = $offsetTimestampParts['weekOfTheYear'];
+		
+		$iterator = new XXX_Timestamp(array('year' => $offsetYear, 'month' => $offsetMonth, 'date' => $offsetDate, 'hour' => 0, 'minute' => 0, 'second' => 0));
+		
+		$daysBackToMonday = $offsetDayOfTheWeek - 1;
+		
+		if ($daysBackToMonday > 0)
+		{
+			$iterator = self::offsetTimestampByDateDays($iterator, -$daysBackToMonday);
+		}
+		
+		$iterator = self::offsetTimestampByDateDays($iterator, -($pastWeeks * 7));
+		
+		for ($i = 0, $iEnd = $pastWeeks + $futureWeeks; $i < $iEnd; ++$i)
+		{
+			$iteratorParts = $iterator->parse(true);
+			
+			$isOffsetWeekOfTheYear = false;
+			
+			if ($iteratorParts['weekOfTheYear'] == $offsetWeekOfTheYear)
+			{
+				$isOffsetWeekOfTheYear = true;
+			}			
+			
+			$nextIterator = new XXX_Timestamp($iterator);
+				
+			$nextIterator = self::offsetTimestampByDateDays($nextIterator, 7);
+			
+			$result[] = array
+			(
+				'year' => $iteratorParts['year'],
+				'month' => $iteratorParts['month'],
+				'date' => $iteratorParts['date'],
+				'weekOfTheYear' => $iteratorParts['weekOfTheYear'],
+				'weekStartTimestamp' => $iterator->get(),
+				'weekEndTimestamp' => $nextIterator->get(),
+				'isOffsetWeekOfTheYear' => $isOffsetWeekOfTheYear
+			);
+			
+			$iterator = $nextIterator;
+		}
+		
+		return $result;
+	}
+	
 	public function getWeeksInYearReportingInformation ($offsetTimestamp = false)
 	{
 		$result = array();
@@ -430,7 +486,8 @@ abstract class XXX_TimestampHelpers
 					'date' => $iteratorParts['date'],
 					'weekOfTheYear' => $iteratorParts['weekOfTheYear'],
 					'weekStartTimestamp' => $iterator->get(),
-					'weekEndTimestamp' => $nextIterator->get()
+					'weekEndTimestamp' => $nextIterator->get(),
+					'isOffsetWeekOfTheYear' => $isOffsetWeekOfTheYear
 				);
 				
 				$iterator = $nextIterator;

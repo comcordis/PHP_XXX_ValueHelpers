@@ -20,6 +20,19 @@ class XXX_Timestamp
 		{
 			$this->compose($tempParameter);
 		}
+		else if (XXX_Type::isString($tempParameter) && XXX_String_Pattern::hasMatch($tempParameter, '^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$'))
+		{
+			$parts = array();
+			
+			$parts['year'] = XXX_Type::makeInteger(XXX_String::getPart($tempParameter, 0, 4));
+			$parts['month'] = XXX_Type::makeInteger(XXX_String::getPart($tempParameter, 5, 2));
+			$parts['date'] = XXX_Type::makeInteger(XXX_String::getPart($tempParameter, 8, 2));
+			$parts['hour'] = XXX_Type::makeInteger(XXX_String::getPart($tempParameter, 11, 2));
+			$parts['minute'] = XXX_Type::makeInteger(XXX_String::getPart($tempParameter, 14, 2));
+			$parts['second'] = XXX_Type::makeInteger(XXX_String::getPart($tempParameter, 17, 2));
+			
+			$this->compose($parts);
+		}
 		else if (XXX_Type::isInteger($tempParameter))
 		{
 			$this->set($tempParameter);

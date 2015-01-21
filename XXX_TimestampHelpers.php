@@ -553,7 +553,7 @@ abstract class XXX_TimestampHelpers
 			$offsetYear = $offsetTimestampParts['year'];
 			$offsetMonth = $offsetTimestampParts['month'];
 			
-			for ($i = 1, $iEnd = 4; $i < $iEnd; ++$i)
+			for ($i = 1, $iEnd = 4; $i <= $iEnd; ++$i)
 			{
 				$isOffsetQuarter = false;
 				

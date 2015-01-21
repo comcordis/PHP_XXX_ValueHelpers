@@ -601,7 +601,7 @@ abstract class XXX_TimestampHelpers
 				(
 					'year' => $offsetTimestampParts['year'],
 					'quarter' => $i,
-					'quarterName' => 'Q' + $i,
+					'quarterName' => 'Q' . $i,
 					'quarterStartTimestamp' => $quarterStart->get(),
 					'quarterEndTimestamp' => $quarterEnd->get(),
 					'isOffsetQuarter' => $isOffsetQuarter

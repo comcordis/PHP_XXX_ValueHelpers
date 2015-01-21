@@ -543,6 +543,74 @@ abstract class XXX_TimestampHelpers
 		return $result;
 	}
 	
+	public function getQuartersInYearReportingInformation ($offsetTimestamp = false)
+	{
+		$result = array();
+		
+		$offsetTimestamp = new XXX_Timestamp($offsetTimestamp);
+		$offsetTimestampParts = $offsetTimestamp->parse(true);
+			
+			$offsetYear = $offsetTimestampParts['year'];
+			$offsetMonth = $offsetTimestampParts['month'];
+			
+			for ($i = 1, $iEnd = 4; $i < $iEnd; ++$i)
+			{
+				$isOffsetQuarter = false;
+				
+				switch ($i)
+				{
+					case 1:
+						$quarterStart = new XXX_Timestamp(array('year' => $offsetYear, 'month' => 1, 'date' => 1, 'hour' => 0, 'minute' => 0, 'second' => 0));
+						$quarterEnd = new XXX_Timestamp(array('year' => $offsetYear, 'month' => 4, 'date' => 1, 'hour' => 0, 'minute' => 0, 'second' => 0));
+						
+						if ($offsetMonth >= 1 && $offsetMonth <= 3)
+						{
+							$isOffsetQuarter = true;
+						}
+						break;
+					case 2:
+						$quarterStart = new XXX_Timestamp(array('year' => $offsetYear, 'month' => 4, 'date' => 1, 'hour' => 0, 'minute' => 0, 'second' => 0));
+						$quarterEnd = new XXX_Timestamp(array('year' => $offsetYear, 'month' => 7, 'date' => 1, 'hour' => 0, 'minute' => 0, 'second' => 0));
+						
+						if ($offsetMonth >= 4 && $offsetMonth <= 6)
+						{
+							$isOffsetQuarter = true;
+						}
+						break;
+					case 3:
+						$quarterStart = new XXX_Timestamp(array('year' => $offsetYear, 'month' => 7, 'date' => 1, 'hour' => 0, 'minute' => 0, 'second' => 0));
+						$quarterEnd = new XXX_Timestamp(array('year' => $offsetYear, 'month' => 10, 'date' => 1, 'hour' => 0, 'minute' => 0, 'second' => 0));
+						
+						if ($offsetMonth >= 7 && $offsetMonth <= 9)
+						{
+							$isOffsetQuarter = true;
+						}
+						break;
+					case 4:
+						$quarterStart = new XXX_Timestamp(array('year' => $offsetYear, 'month' => 10, 'date' => 1, 'hour' => 0, 'minute' => 0, 'second' => 0));
+						$quarterEnd = new XXX_Timestamp(array('year' => $offsetYear + 1, 'month' => 1, 'date' => 1, 'hour' => 0, 'minute' => 0, 'second' => 0));
+						
+						if ($offsetMonth >= 10 && $offsetMonth <= 12)
+						{
+							$isOffsetQuarter = true;
+						}
+						break;
+				}
+				
+				$result[] = array
+				(
+					'year' => $offsetTimestampParts['year'],
+					'quarter' => $i,
+					'quarterName' => 'Q' + $i,
+					'quarterStartTimestamp' => $quarterStart->get(),
+					'quarterEndTimestamp' => $quarterEnd->get(),
+					'isOffsetQuarter' => $isOffsetQuarter
+				);
+			}
+			
+		return $result;
+	}
+	
 	public function getOffsetReportingInformation ($offsetTimestamp = false)
 	{
 		$result = array();

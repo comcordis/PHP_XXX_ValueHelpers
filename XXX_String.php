@@ -457,11 +457,15 @@ Special characters:  : ; < = > ? @ [ \ ] ^ _ ` { | } ~';
 	////////////////////
 	
 	// Convert all line separators to the canonical form
-	public static function normalizeLineSeparators ($string)
+	public static function normalizeLineSeparators ($string, $lineSeparator = '')
 	{
+		if ($lineSeparator == '')
+		{
+			$lineSeparator = XXX_String::$lineSeparator;
+		}
 		$string = self::replace($string, "\r\n", "\n");
 		$string = self::replace($string, "\r", "\n");
-		$string = self::replace($string, "\n", XXX_String::$lineSeparator);
+		$string = self::replace($string, "\n", $lineSeparator);
 		
 		return $string;
 	}
@@ -483,6 +487,13 @@ Special characters:  : ; < = > ? @ [ \ ] ^ _ ` { | } ~';
 		$string = self::normalizeLineSeparators($string);
 		$string = self::replace($string, XXX_String::$lineSeparator, '');
 		
+		return $string;
+	}
+
+	public static function removeTrailingLineSeparators ($string)
+	{
+		$string = XXX_String_Pattern::replace($string, '(\\r\\n|\\r|\\n)*$', '', '');
+
 		return $string;
 	}
 	

@@ -1069,8 +1069,7 @@ abstract class XXX_TimestampHelpers
 					$localSecondOffset += 3600;
 				}
 			}
-			
-			
+
 			return $localSecondOffset;
 		}
 			

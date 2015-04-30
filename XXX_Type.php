@@ -121,7 +121,7 @@ abstract class XXX_Type
 	{
 		if (!self::isNumber($value))
 		{
-			if (!self::isNumeric($value))
+			if (!self::isNumeric($value) || self::isEmpty($value) || self::isFalse($value))
 			{
 				$value = 0;	
 			}
@@ -151,18 +151,21 @@ abstract class XXX_Type
 	
 	public static function isNumeric ($value = null)
 	{
-		/*$result = false;
+		$result = false;
 
 		$result = self::isInteger($value) || self::isFloat($value);
 
 		if (!$result)
 		{
-			$value = self::makeString($value);
+			$stringValue = self::makeString($value);
 
-			$result = self::makeString(self::makeInteger($value)) == $value || self::makeString(self::makeFloat($value)) == $value;
+			$result = self::makeString(self::makeInteger($value)) == $stringValue || self::makeString(self::makeFloat($value)) == $stringValue;
+
+			if (!$result)
+			{
+				$result = $value === false;
+			}
 		}
-	*/
-		$result = self::makeInteger($value) == $value || self::makeFloat($value) == $value;
 
 		return $result;
 	}

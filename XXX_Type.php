@@ -3,7 +3,7 @@
 abstract class XXX_Type
 {		
 	// lean | full
-	public static $arrayLayoutMethod = 'full';
+	public static $arrayLayoutMethod = 'lean';
 	public static $comments = true;
 	
 	////////////////////
@@ -496,11 +496,11 @@ abstract class XXX_Type
 					{
 						if (self::$arrayLayoutMethod == 'full')
 						{
-							self::peakAtVariableSub($value[$i], $spacing + 1, $identifier . '[' . $i . ']');						
+							self::peakAtVariableSub($value[$i], $spacing, $identifier . '[' . $i . ']');
 						}
 						else if (self::$arrayLayoutMethod == 'lean')
 						{
-							self::peakAtVariableSub($value[$i], $spacing + 1, '', '', ($i < $iEnd - 1) ? ',' : '');	
+							self::peakAtVariableSub($value[$i], $spacing + 1, '', '', ($i < $iEnd - 1) ? ',' : '');
 						}						
 					}
 				}
@@ -551,7 +551,7 @@ abstract class XXX_Type
 					{
 						if (self::$arrayLayoutMethod == 'full')
 						{
-							self::peakAtVariableSub($subValue, $spacing + 1, $identifier . '[\'' . XXX_String::addSlashes($subKey) . '\']');
+							self::peakAtVariableSub($subValue, $spacing, $identifier . '[\'' . XXX_String::addSlashes($subKey) . '\']');
 						}
 						else if (self::$arrayLayoutMethod == 'lean')
 						{

@@ -1,6 +1,0 @@
-project:XXX_ValueHelpers_PHP
-deployEnvironment:development
-checkout:master
-commitHash:d092bb9184b2e5630a22868aa866240a76e77185
-timestamp:2015-04-18T17:11:06Z
-deployer:operations

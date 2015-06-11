@@ -100,7 +100,7 @@ abstract class XXX_String_CSV
 		return $result;
 	}
 	
-	public static function parse ($raw, $separator = ',')
+	public static function parse ($raw, $separator = ',', $convertFirstRowToKeys = false)
 	{
 		$raw = XXX_String::normalizeLineSeparators($raw);
 		
@@ -109,8 +109,36 @@ abstract class XXX_String_CSV
 		$parsedLines = self::parseLines($lines, $separator);
 		
 		$parsedLines = self::balanceColumns($parsedLines);
+
+		if ($convertFirstRowToKeys)
+		{
+			$parsedLines = self::convertFirstRowToKeys($parsedLines);
+		}
 		
 		return $parsedLines;
+	}
+
+	public static function convertFirstRowToKeys ($parsedCSV = array())
+	{
+		$convertedCSV = array();
+
+		$keys = $parsedCSV[0];
+
+		for ($i = 1, $iEnd = XXX_Array::getFirstLevelItemTotal($parsedCSV); $i < $iEnd; ++$i)
+		{
+			$row = $parsedCSV[$i];
+
+			$convertedRow = array();
+
+			for ($j = 0, $jEnd = XXX_Array::getFirstLevelItemTotal($keys); $j < $jEnd; ++$j)
+			{
+				$convertedRow[$keys[$j]] = $row[$j];
+			}
+
+			$convertedCSV[] = $convertedRow;
+		}
+
+		return $convertedCSV;
 	}
 	
 	public static function sortColumnAscending ($a, $b)

@@ -11,6 +11,52 @@ abstract class XXX_Array
 	{
 		return array();
 	}
+
+	public static function getItemForKeyValue ($array, $key = '', $value = '', $default = false)
+	{
+		$result = $default;
+
+		foreach ($array as $item)
+		{
+			if ($item[$key] == $value)
+			{
+				$result = $item;
+
+				break;
+			}
+		}
+
+		return $result;
+	}
+
+	public static function getItemsWithKeyValue ($array, $key = '', $value = '')
+	{
+		$result = array();
+
+		foreach ($array as $item)
+		{
+			$add = false;
+
+			if (XXX_Type::isArray($value))
+			{
+				if (XXX_Array::hasValue($value, $item[$key]))
+				{
+					$add = true;
+				}
+			}
+			else if ($item[$key] == $value)
+			{
+				$add = true;
+			}
+
+			if ($add)
+			{
+				$result[] = $item;
+			}
+		}
+
+		return $result;
+	}
 	
 	////////////////////
 	// Value & key existance

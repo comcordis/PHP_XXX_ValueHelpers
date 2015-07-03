@@ -151,23 +151,23 @@ abstract class XXX_Type
 	
 	public static function isNumeric ($value = null)
 	{
-		$result = false;
-
-		$result = self::isInteger($value) || self::isFloat($value);
-
-		if (!$result)
-		{
-			$stringValue = self::makeString($value);
-
-			$result = self::makeString(self::makeInteger($value)) == $stringValue || self::makeString(self::makeFloat($value)) == $stringValue;
-
-			if (!$result)
-			{
-				$result = $value === false;
-			}
-		}
-
-		return $result;
+	   $result = false;
+	
+	   $result = self::isInteger($value) || self::isFloat($value);
+	
+	   if (!$result)
+	   {
+	      $stringValue = self::makeString($value);
+	
+	      $result = self::makeString(self::makeInteger($value)) == $stringValue || self::makeString(self::makeFloat($value)) == $stringValue || preg_match('/^[0-9\.\,\-]{1,}$/i', $value);
+	
+	      if (!$result)
+	      {
+	         $result = $value === false;
+	      }
+	   }
+	
+	   return $result;
 	}
 	
 	public static function isPositiveNumeric ($value = null)
